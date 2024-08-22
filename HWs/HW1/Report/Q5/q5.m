@@ -1,60 +1,53 @@
 clear;
 clc;
-im1 = double(imread('T1.jpg')); im1 = im1 + 1;
-im2 = double(imread('T2.jpg')); im2 = im2 + 1;
-im3 = imrotate(im2,28.5,'bilinear','crop');
 
-theta_min = -45;
-theta_max = 45;
-LL = (theta_max - theta_min)+1;
-binwidth = 10;
-thetavals = theta_min:theta_max;
+% Images
+J1 = im2double(imread('.\..\..\T1.jpg'));
+J2 = im2double(imread('.\..\..\T2.jpg'));
 
-ncc = zeros(LL,1);
-qmi = ncc;
+%%% (a)
+J3 = imrotate(J2, 28.5, 'bilinear', 'crop');
+J3(isnan(J3)) = 0;
+
+% Displaying and saving the image
+figure, imshow(J3), title('Rotated Image J3')
+imwrite(J3, 'J3.jpg', 'jpg')
+
+%%% (b)
+angles = -45:1:45;
+
+ncc = zeros(size(angles));
 je = ncc;
+qmi = ncc;
 
-count = 1;
-for theta = -45:1:45
-   fprintf ('\n%f',theta);
-   im4 = imrotate(im3,theta,'bilinear','crop'); 
-   
-   valid_indices = find(im4 > 0);
-   m1 = mean(im1(valid_indices));
-   m2 = mean(im4(valid_indices));
-   ncc(count) = abs(dot(im1(valid_indices)-m1,im4(valid_indices)-m2))/( sqrt(sum((im1(valid_indices)-m1).^2)) * sqrt(sum((im4(valid_indices)-m2).^2)) );
-   
-   p12 = joint_hist(im1(valid_indices),im4(valid_indices),binwidth);
-   p2 = sum(p12,1); % marginal histogram of the second image (im4) as im1 is being integrated out
-   p1 = sum(p12,2); % marginal histogram of the first image (im1) as im4 is being integrated out
-   je(count) = -sum(p12(p12>0).*log(p12(p12>0)));
-   
-   numbins = length(p1);
-   p1p2 = zeros(numbins);
-   for i=1:numbins
-       for j=1:numbins
-           p1p2(i,j) = p1(i)*p2(j); 
-       end
-   end
-   qmi(count) = sum(sum( (p12-p1p2).^2));
-   
-   count = count+1;
+for i = 1:length(angles)
+    J4 = imrotate(J3, angles(i), 'bilinear', 'crop');
+    J4(isnan(J4)) = 0;
+    
+    J4 = (J4 - mean(J4(:))) / std(J4(:));
+    J1 = (J1 - mean(J1(:))) / std(J1(:));
+    
+    ncc(i) = sum(J1(:) .* J4(:)) / numel(J1);
+    
+    jointHist = histcounts2(J1(:), J4(:), 256);
+    jointProb = jointHist / sum(jointHist(:));
+    je(i) = -sum(jointProb(jointProb > 0) .* log2(jointProb(jointProb > 0)));
+    
+    qmi(i) = QMI(J1, J4);
 end
 
+function qmi = QMI(im1, im2)
+    % Quadradic Mutual Information
 
-plot(thetavals,je);
-title ('JE versus angle');
-[minval,minind] = min(je);
-fprintf('\nMin. value of JE = %f, which occurs at %f',minval,thetavals(minind));
+    bins = 256;
 
-figure; plot(thetavals,ncc);
-title ('NCC versus angle');
-[maxval,maxind] = max(ncc);
-fprintf('\nMax. value of NCC = %f, which occurs at %f',maxval,thetavals(maxind));
+    hist_1 = histcounts(im1, bins);
+    hist_2 = histcounts(im2, bins);
 
-figure; plot(thetavals,qmi);
-title ('QMI versus angle');
-[maxval,maxind] = max(qmi);
-fprintf('\nMax. value of QMI = %f, which occurs at %f',maxval,thetavals(maxind));
+    joint_hist = zeros(bins);
 
-
+    for i = 1:size(im1, 1)
+        for j = 1:size(im1, 2)
+            joint_hist(im1(i, j) + 1, im2(i, j) + 1) = joint_hist(im1(i, j) + 1, im2(i, j) + 1) + 1;
+        end
+    end

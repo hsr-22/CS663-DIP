@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+
+\title{CS663: Digital Image Processing - Homework 1}
+\author{Harsh $\vert$ Pranav $\vert$ Swayam} 
+
+\begin{document}
+
+\maketitle
+\section{Homework 1 - Question 1}
+
+Answer : 
+
+There are two possibilties - one is that the size of the image scales down with the pixel size (simple compression), while the other is that the size of the image itself does not change implying a difference in resolution.
+
+In the first case, the motion model that we would adopt is a simple scaling model. This is because the image is simply scaled down and the only transformation that is required is a scaling transformation. The scaling transformation is given by the following equation:
+
+\begin{equation}
+\begin{bmatrix}
+x' \\
+y' \\
+1
+\end{bmatrix}
+=
+\begin{bmatrix}
+s_x & 0 & 0 \\
+0 & s_y & 0 \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+1
+\end{bmatrix}
+\end{equation}
+
+where $s_x$ and $s_y$ are the scaling factors in the x and y directions respectively. In this case, $s_x = 0.5/0.25 = 2$ and $s_y = 0.5/0.25 = 2$.
+
+In the second case, 
+
+
+\end{document}
