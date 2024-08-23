@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+
+\title{CS663: Digital Image Processing - Homework 1}
+\author{Harsh $\vert$ Pranav $\vert$ Swayam} 
+
+\begin{document}
+
+\maketitle
+\section{Homework 1 - Question 2}
+
+
+\subsection*{Given:}
+
+$u_{12}$ represents the motion from $I_1$ to $I_2$ and a similar relation for $u_{23}$ and $u_{13}$.
+
+\subsection*{Relation:}
+$$u_{13}=u_{12}+u_{23}$$
+
+
+\subsubsection*{Explanation:} 
+
+Since the motion is solely transnational therefore the total displacement from $I_1$ to $I_3$ should be the sum of the displacement between $I_1$-$I_2$ and $I_2$-$I_3$.
+
+
+\subsection*{Practicality:}
+
+
+Some troubles may arise when this relations is used in practical. The reasons may be:
+
+
+\subsubsection*{Numerical Approximations:} 
+
+Numerical methods used in computation introduce rounding errors, which can accumulate and cause the computed motion vectors to deviate slightly from the theoretical relationship.
+
+
+\subsubsection*{Noise:} 
+
+The camera and other similar devices may be cursed with random noise, which can distort and hamper some features leading to small errors.
+
+\end{document}
