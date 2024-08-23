@@ -3,6 +3,7 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{hyperref}
+\setlength{\parindent}{0pt}
 
 \title{CS663: Digital Image Processing - Homework 1}
 \author{Harsh $\vert$ Pranav $\vert$ Swayam} 
@@ -30,10 +31,15 @@ Sr. No. & Coordinates\_MATLAB & Coordinates\_Graph \\
 \end{tabular}
 \end{table}
 
-Let us denote the graph coordinates as $(x_g, y_g)_i$ and the MATLAB coordinates as $(x_m, y_m)_i$ where i is from 1 to 4.
+Let us denote the graph coordinates as $(x_g, y_g)_i$ and the MATLAB coordinates as $(x_m, y_m)_i$ where $i$ is from 1 to 4.
 
+\vspace{5pt}
 From observing these points, we can see that the difference of $x_m$ (or $y_m$) coordinates gets scaled down by $\approx 0.0625 = \frac{1}{16}$ to give the $x_g$ (or $y_g$) coordinates.
-Mathematically, we can write this as:
+
+\hrulefill
+
+\vspace{5pt}
+In {\bf mathematical representation}, we can write this as:
 \begin{equation}
 x_g = \frac{x_m}{16} + c_1
 \end{equation}
@@ -42,7 +48,10 @@ y_g = \frac{y_m}{16} + c_2
 \end{equation}
 where $c_1$ and $c_2$ are constants that act as offsets such that the differences in the coordinates are preserved.
 
-In matrix form, we can write this as:
+\hrulefill
+
+\vspace{5pt}
+In \textbf{matrix form}, we can write this as:
 \begin{equation}
 \begin{bmatrix}
 x_g \\
@@ -63,5 +72,15 @@ y_m \\
 \end{equation}
 
 For the points in consideration, we can calculate the values of $c_1$ and $c_2$, which come out to be $\approx-35.5$ and $\approx538.625$ respectively. The exact values cannot be calculated as the points are collected through manual inspection and are not exact.
+
+\subsection*{Summary:} 
+The coordinates of the points in the MATLAB image can be transformed to the coordinates in the graph image using the affine transformation matrix:
+\begin{equation*}
+A = \begin{bmatrix}
+\frac{1}{16} & 0 & -35.5 \\
+0 & \frac{1}{16} & 538.625 \\
+0 & 0 & 1
+\end{bmatrix}
+\end{equation*}
 
 \end{document}
