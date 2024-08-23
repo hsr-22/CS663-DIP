@@ -76,7 +76,7 @@ fprintf('Best QMI angle: %.2f degrees (QMI value: %.4f)\n', angles(qmiIndex), qm
 optimJ4 = imrotate(J3, angles(jeIndex), 'bilinear', 'crop');
 optimJ4(isnan(optimJ4)) = 0;
 
-bins = 37;
+bins = 37; % 256/7 approximately
 
 histJ1 = histcounts(J1(:), bins);
 histJ4 = histcounts(optimJ4(:), bins);
