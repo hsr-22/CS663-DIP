@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{hyperref}
@@ -16,6 +17,42 @@
 
 \maketitle
 \section{Homework 3 - Question 5}
+We have,
+$$
+F(u,v) = \sum_{x,y} f(x,y) \exp\left(-j 2 \pi \frac{(ux + vy)}{N}\right)
+$$
+$$
+F(-u,-v) = \sum_{x,y} f(x,y) \exp\left(j 2 \pi \frac{(ux + vy)}{N}\right).
+$$
+\begin{equation}
+\begin{split}
+\therefore F^*(u,v) &= \left( \sum_{x,y} f(x,y) \exp\left(-j 2 \pi \frac{(ux + vy)}{N}\right) \right)^* \\
+&= F(-u,-v)
+\end{split}
+\end{equation}
+\texttt{The conjugation step is valid because $f(x,y)$ is real-valued}.
+\vspace{10pt}
 
+If $f$ is both real and even, i.e. $f(x,y) = f(-x,-y)$. Then we have:
+\begin{equation}
+\begin{split}
+F^*(u,v) &= \left( \sum_{x=0}^{N} \sum_{y=0}^{N} f(x,y) \exp\left(-j 2 \pi \frac{(ux + vy)}{N}\right) \right)^*\\
+&= \sum_{x=0}^{N} \sum_{y=0}^{N} f(x,y) \exp\left(j 2 \pi \frac{(ux + vy)}{N}\right) \\
+&= \sum_{x=0}^{N} \sum_{y=0}^{N} f(-x,-y) \exp\left(j 2 \pi \frac{(-ux - vy)}{N}\right)
+\end{split}
+\end{equation}
+By substituting $x' = -x$ and $y' = -y$, we get -
+$$
+= \sum_{x'=0}^{N} \sum_{y'=0}^{N} f(x',y') \exp\left(-j 2 \pi \frac{(ux' + vy')}{N}\right)
+$$
+\begin{equation}
+= F(u,v)
+\end{equation}
+Hence, $F(u,v)$ is proven to be real-valued. 
+
+\vspace{10pt}
+We already proved $F^*(u,v) = F(-u,-v)$ which in this case shows that $F(u,v) = F(-u,-v)$ and hence $F(u,v)$ is even.
+
+Therefore, if $f$ is real and even, then $F(u,v)$ is also real and even.
 
 \end{document}
