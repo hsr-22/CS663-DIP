@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{hyperref}
@@ -17,5 +18,23 @@
 \maketitle
 \section{Homework 3 - Question 6}
 
+First we prove \( F(F(f(t))) = f(-t) \):
+
+\begin{align*}
+    G(f) = F(f(t)) &= \int_{-\infty}^{\infty} f(t) e^{-j 2 \pi f t} dt \\
+    H(\tau) = F(G(f)) = F(F(f(t))) &= \int_{-\infty}^{\infty} G(f) e^{-j 2 \pi f \tau} df \\
+    &= \int_{-\infty}^{\infty} \left( \int_{-\infty}^{\infty} f(t) e^{-j 2 \pi f t} dt \right) e^{-j 2 \pi f \tau} df \\
+    &= \int_{-\infty}^{\infty} f(t) \left( \int_{-\infty}^{\infty} e^{-j 2 \pi f (t + \tau)} df \right) dt \\ &(\because\text{ f and t are independent}) \\
+    &= \int_{-\infty}^{\infty} f(t) \delta(t + \tau) dt \quad \text{(Shifting)} \\
+    &= f(-\tau) \quad \text{(Sifting)}
+\end{align*}
+
+$\therefore H(\tau) = f(-\tau) \implies H(t) = f(-t) \implies F(F(f(t))) = f(-t)$
+
+Now, if \( F(F(f(t))) = f(-t) \), then 
+
+$F(F(F(F(f(t))))) = F(F(f(-t))) = f(-(-t)) = f(t)$
+
+A practical use of this property is in the context of image processing. For example, if we have an image and we apply a filter to it, we can apply the filter again to the output of the first filter to get the original image back. This can be useful in cases where we want to apply a filter to an image and then apply the inverse of the filter to the output to get the original image back.
 
 \end{document}
