@@ -3,39 +3,39 @@ clear; close all;
 
 % Input images
 
-barbaraImage = im2double(imread('../images/barbara256.png'));
-figure(1); imagesc(barbaraImage); colormap("gray"); title("Original Image barbara256");
-kodakImage = im2double(imread('../images/kodak24.png'));
-figure(2); imagesc(kodakImage); colormap("gray"); title("Original Image kodak24");
+barbara = im2double(imread('../images/barbara256.png'));
+figure(1); imagesc(barbara); colormap("gray"); title("Original Image barbara256");
+kodak = im2double(imread('../images/kodak24.png'));
+figure(2); imagesc(kodak); colormap("gray"); title("Original Image kodak24");
 
 % Make noisy images
-list_of_std_deviations = {5,10};
-counter_of_images = 3;
-for k1 = 1:length(list_of_std_deviations)
-    StdDev = list_of_std_deviations{k1} ; % noise standard deviation
+std_devs = {5,10};
+ctr = 3;
+for k1 = 1:length(std_devs)
+    StdDev = std_devs{k1} ; % noise standard deviation
     
-    noisyBarbara = barbaraImage + StdDev/255 * randn(size(barbaraImage));
-    noisyKodak = kodakImage + StdDev/255 * randn(size(kodakImage));
+    noisyBarbara = barbara + StdDev/255 * randn(size(barbara));
+    noisyKodak = kodak + StdDev/255 * randn(size(kodak));
     
-    figure(counter_of_images); imagesc(noisyBarbara); colormap("gray"); title("Noisy barbara256 with \sigma_n = " + num2str(StdDev ));
-    counter_of_images = counter_of_images+1;
-    figure(counter_of_images); imagesc(noisyKodak); colormap("gray"); title("Noisy kodak24 with \sigma_n = " + num2str(StdDev ));
-    counter_of_images = counter_of_images+1;
+    figure(ctr); imagesc(noisyBarbara); colormap("gray"); title("Noisy barbara256 with \sigma_n = " + num2str(StdDev ));
+    ctr = ctr+1;
+    figure(ctr); imagesc(noisyKodak); colormap("gray"); title("Noisy kodak24 with \sigma_n = " + num2str(StdDev ));
+    ctr = ctr+1;
     
-    list_of_sr_ss = {{2,2},{15,3},{3,15}} ;
-    for k2 = 1:length(list_of_sr_ss)
+    list_of_ss_sr = {{2,2},{3,15}} ;
+    for k2 = 1:length(list_of_ss_sr)
         
-        sigma_s = list_of_sr_ss{k2}{1};  %define sigma values as variable
-        sigma_r = list_of_sr_ss{k2}{2};
+        sigma_s = list_of_ss_sr{k2}{1};  %define sigma values as variable
+        sigma_r = list_of_ss_sr{k2}{2};
         
         barbaraFiltered = RunMeanShift(noisyBarbara, sigma_s, sigma_r );
         kodakFiltered = RunMeanShift(noisyKodak, sigma_s, sigma_r );
         
-        figure(counter_of_images); imagesc(barbaraFiltered); colormap("gray");
-        counter_of_images = counter_of_images+1;
+        figure(ctr); imagesc(barbaraFiltered); colormap("gray");
+        ctr = ctr+1;
         title("barbara256 - Mean shifted filter for \sigma_n = " + num2str(StdDev ) + ", \sigma_s = " + num2str(sigma_s) + ", \sigma_r = " + num2str(sigma_r));
-        figure(counter_of_images); imagesc(kodakFiltered); colormap("gray");
-        counter_of_images = counter_of_images+1;
+        figure(ctr); imagesc(kodakFiltered); colormap("gray");
+        ctr = ctr+1;
         title("kodak24 - Mean shifted filter for \sigma_n = " + num2str(StdDev ) + ", \sigma_s = " + num2str(sigma_s) + ", \sigma_r = " + num2str(sigma_r));
         
     end
