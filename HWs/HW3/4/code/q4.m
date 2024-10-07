@@ -4,6 +4,13 @@ I(:, 101) = 255; % Set the central column to 255
 
 % Compute the 2D Fourier transform and shift zero-frequency to center
 F = fft2(I);
+log_F = log(abs(F) + 1);
+% Plot the result
+figure;
+imagesc(log_F);
+colorbar;
+title('Logarithm of Fourier Magnitude (fft2)');
+
 F_shifted = fftshift(F);
 
 % Compute the logarithm of the magnitude

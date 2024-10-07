@@ -25,9 +25,7 @@ The given partial differential equation (PDE) is:
 \frac{\partial I}{\partial t} = c \left( \frac{\partial^2 I}{\partial x^2} + \frac{\partial^2 I}{\partial y^2} \right)
 \]
 
-This is the isotropic heat equation, where \( I(x, y, t) \) represents an image (or a function) that evolves over time, and \( c \) is a non-negative constant. The equation describes how the intensity \( I \) at any point in the image changes over time due to the diffusion process, which is governed by second-order spatial derivatives.
-
-% Our goal is to prove that solving this PDE (i.e., running this diffusion process on the image \( I \)) is equivalent to convolving the image with a Gaussian of zero mean and some standard deviation \( \sigma \), which we will find.
+This is the isotropic heat equation, where \( I(x, y, t) \) represents an image (or a function) that evolves over time, and \( c \) is a non-negative constant.
 
 \subsection*{Fourier Transform of the Heat Equation}
 
@@ -42,6 +40,7 @@ The heat equation in the spatial domain is:
 \[
 \frac{\partial I(x, y, t)}{\partial t} = c \left( \frac{\partial^2 I(x, y, t)}{\partial x^2} + \frac{\partial^2 I(x, y, t)}{\partial y^2} \right)
 \]
+
 Now, we take the 2D Fourier transform of both sides.
 The Fourier transform of the time derivative \( \frac{\partial I(x, y, t)}{\partial t} \) is:
   \[
@@ -60,8 +59,6 @@ Substituting these into the Fourier-transformed PDE, we get:
 \[
 \frac{\partial \hat{I}(u, v, t)}{\partial t} = -c \left( (2 \pi u)^2 + (2 \pi v)^2 \right) \hat{I}(u, v, t)
 \]
-
-% \subsubsection*{Solve the Differential Equation in the Frequency Domain}
 
 This is a first-order differential equation in time for \( \hat{I}(u, v, t) \). We can solve it by separating variables:
 \[
@@ -82,23 +79,21 @@ Here, \( \hat{I}(u, v, 0) \) is the initial Fourier transform of the image at \(
 We recognize that the solution in the frequency domain has the form of the Fourier transform of a Gaussian. The exponential term \( e^{-c \left( (2 \pi u)^2 + (2 \pi v)^2 \right) t} \) is the Fourier transform of a Gaussian in the spatial domain.
 \vspace{5pt}
 
-From the properties of Fourier transforms, the Fourier transform of a Gaussian is also a Gaussian, and the inverse Fourier transform of the Gaussian in frequency domain will give a Gaussian in the spatial domain.
+We know that the fourier transform of a Gaussian is also a Gaussian, and the inverse fourier transform of the Gaussian in frequency domain will give a Gaussian in the spatial domain.
 \vspace{5pt}
 
 Thus, the solution in the spatial domain \( I(x, y, t) \) is obtained by convolving the initial image \( I(x, y, 0) \) with a Gaussian. The standard deviation of this Gaussian depends on the parameters of the exponential term.
 
-% \subsubsection*{Determine the Standard Deviation}
-
-The general form of the Gaussian in the frequency domain is:
+The Fourier transform of the Gaussian in the frequency domain is:
 
 \[
-e^{-\frac{\sigma^2}{2} \left( u^2 + v^2 \right)}
+e^{-\frac{(2\pi\sigma)^2}{2} \left( u^2 + v^2 \right)}
 \]
 
 Comparing this with our result \( e^{-c \left( (2 \pi u)^2 + (2 \pi v)^2 \right) t} \), we can identify the standard deviation \( \sigma \) by matching terms. Specifically:
 
 \[
-\frac{\sigma^2}{2} = 4 \pi^2 c t
+\frac{\sigma^2}{2} = c t
 \]
 
 Solving for \( \sigma \), we get:

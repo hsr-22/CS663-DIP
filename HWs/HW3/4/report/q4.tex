@@ -43,7 +43,7 @@ F(u,v) = \frac{255}{201} e^{-j 2\pi \frac{101u}{201}} \sum_{y=1}^{201} e^{-j 2\p
 The summation is a geometric series, and it evaluates to:
 
 \[
-F(u,v) = \frac{255}{201} e^{-j 2\pi \frac{101u}{201}} \cdot \frac{1 - e^{-j 2\pi v}}{1 - e^{-j \frac{2\pi v}{201}}}
+F(u,v) = \frac{255}{201} e^{-j 2\pi \frac{101u + v}{201}} \cdot \frac{1 - e^{-j 2\pi v}}{1 - e^{-j \frac{2\pi v}{201}}}
 \]
 
 This evaluates to:
@@ -51,44 +51,27 @@ This evaluates to:
 \[
 F(u,v) = \begin{cases}
 K e^{-j 2\pi \frac{101u}{201}} \cdot 201, & v = 201n, \quad n \in \mathbb{Z}, \\
-K e^{-j 2\pi \frac{101u}{201}} \cdot \frac{1 - e^{-j 2\pi v}}{1 - e^{-j \frac{2\pi v}{201}}}, & \text{otherwise}
+K e^{-j 2\pi \frac{101u+v}{201}} \cdot \frac{1 - e^{-j 2\pi v}}{1 - e^{-j \frac{2\pi v}{201}}}, & \text{otherwise}
 \end{cases}
 \]
 
 where \( K \) is a constant.
 
-This is zero when \( v \) is an integer not divisible by 201.
-
-\section*{MATLAB Code}
-
-The following MATLAB code computes the Fourier transform using \texttt{fft2}, shifts the zero frequency component to the center using \texttt{fftshift}, and plots the logarithm of the Fourier magnitude:
-
-\begin{verbatim}
-% MATLAB code to compute the Fourier transform
-I = zeros(201, 201); % Create a 201x201 black image
-I(:, 101) = 255; % Set the central column to 255
-
-% Compute the 2D Fourier transform and shift zero-frequency to center
-F = fft2(I);
-F_shifted = fftshift(F);
-
-% Compute the logarithm of the magnitude
-log_magnitude = log(abs(F_shifted) + 1);
-
-% Plot the result
-figure;
-imagesc(log_magnitude);
-colorbar;
-title('Logarithm of Fourier Magnitude');
-\end{verbatim}
-
 \section*{Output Image}
 
-The output image is shown in Figure \ref{fig:q4}.
+The output image of \texttt{fft2} and of \texttt{fftshift} in MATLAB is shown in Figure \ref{fig:q4_1} and Figure \ref{fig:q4}.:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{fft2_output.png}
+    \caption{Logarithm of Fourier Magnitude (fft2)}
+    \label{fig:q4_1}
+\end{figure}
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{fourier_output.png}
-    \caption{Logarithm of Fourier Magnitude}
+    \caption{Logarithm of Fourier Magnitude (fftshift)}
     \label{fig:q4}
 \end{figure}
 
