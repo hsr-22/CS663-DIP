@@ -17,5 +17,81 @@
 \maketitle
 \section{Homework 3 - Question 2}
 
+\subsection*{Part 1. Correlation of Two Continuous 2D Signals in the Continuous Domain}
+
+\subsubsection*{Definition of Correlation in the Continuous Domain}
+Given two continuous 2D signals $f(x, y)$ and $g(x, y)$, the correlation between these two signals is defined as:
+\[
+h(x, y) = \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} f(x', y') g(x' + x, y' + y) \, dx' \, dy'
+\]
+This is an integral that shifts the signal $g(x, y)$ over $f(x, y)$ and computes their similarity at each point.
+
+\subsubsection*{Fourier Transform of Correlation in the Continuous Domain}
+The Fourier transform $\mathcal{F}\{ f(x, y) \}$ of a continuous signal $f(x, y)$ is defined as:
+\[
+F(u, v) = \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} f(x, y) e^{-i 2\pi (ux + vy)} \, dx \, dy
+\]
+We can convert x to -x and we get h(x,y) as:
+\[
+h(x, y) = \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} f(x', y') g(x' - (-x), y' - (-y)) \, dx' \, dy'
+\]
+Applying the Fourier Transform to both sides of the correlation equation for $h(x, y)$, we use the Convolution Theorem. Then we get:
+%The Convolution Theorem states that the Fourier transform of the correlation of two functions is the product of their Fourier transforms:
+\[
+\mathcal{F}\{h(x, y)\} = \mathcal{F}\{f(x, y)\} \cdot \mathcal{F}\{g(-x, -y)\}
+\]
+The term $g(-x, -y)$ represents the flipped version of $g(x, y)$. Using the property that the Fourier transform of a flipped function is the complex conjugate of the original Fourier transform, we get:
+\[
+H(u, v) = F(u, v) \cdot G^*(u, v)
+\]
+Where $F(u, v)$ and $G(u, v)$ are the Fourier transforms of $f(x, y)$ and $g(x, y)$, and $G^*(u, v)$ is the complex conjugate of $G(u, v)$.
+
+%\subsubsection*{Summary of the Continuous Case}
+%Thus, the Fourier transform of the correlation of two continuous 2D signals %is:
+%\[
+%\mathcal{F}\{f(x, y) \star g(x, y)\} = F(u, v) \cdot G^*(u, v)
+%\]
+%Where $\star$ denotes the correlation operation, $F(u, v)$ is the Fourier %transform of $f(x, y)$, and $G^*(u, v)$ is the complex conjugate of the %Fourier transform of $g(x, y)$.
+
+\subsection*{Part 2. Correlation of Two Discrete 2D Signals in the Discrete Domain}
+
+\subsubsection*{Definition of Correlation in the Discrete Domain}
+Consider two discrete 2D signals $f[m, n]$ and $g[m, n]$. The correlation in the discrete domain is defined as:
+\[
+h[m, n] = \sum_{m'} \sum_{n'} f[m', n'] g[m' + m, n' + n]
+\]
+This is a summation over all possible shifts of $g[m, n]$ relative to $f[m, n]$.
+
+\subsubsection*{2D Discrete Fourier Transform (DFT)}
+The 2D Discrete Fourier Transform (DFT) of a discrete signal $f[m, n]$ is defined as:
+\[
+F[k, l] = \frac{1}{\sqrt{MN}} \sum_{m=0}^{M-1} \sum_{n=0}^{N-1} f[m, n] e^{-i 2\pi \left( \frac{km}{M} + \frac{ln}{N} \right)}
+\]
+Similarly, the DFT of $g[m, n]$ is:
+\[
+G[k, l] = \frac{1}{\sqrt{MN}} \sum_{m=0}^{M-1} \sum_{n=0}^{N-1} g[m, n] e^{-i 2\pi \left( \frac{km}{M} + \frac{ln}{N} \right)}
+\]
+
+\subsubsection*{Fourier Transform of Correlation in the Discrete Domain}
+h(m,n) can be written as:
+\[
+h[m, n] = \sum_{m'} \sum_{n'} f[m', n'] g[m' - (-m), n' - (-n)]
+\]
+By applying Fourier on both sides and using the Discrete Convolution Theorem, we get the following relationship between the correlation and Fourier transforms:
+\[
+H[k, l] = F[k, l] \cdot G[-k, -l]
+\]
+Which turns to the following due to the flipping property:
+\[
+H[k, l] = F[k, l] \cdot G^*[k, l]
+\]
+Where $H[k, l]$ is the 2D DFT of the correlation $h[m, n]$, and $F[k, l]$ and $G[k, l]$ are the 2D DFTs of $f[m, n]$ and $g[m, n]$, with $G^*[k, l]$ being the complex conjugate of $G[k, l]$.
+
+%\subsubsection*{Summary of the Discrete Case}
+%Thus, the 2D DFT of the correlation of two discrete signals is:
+%\[
+%\mathcal{F}\{f[m, n] \star g[m, n]\} = F[k, l] \cdot G^*[k, l]
+%\]
+%Where $\star$ represents the correlation, and $F[k, l]$ and $G^[k, l]$ are %the 2D DFTs of $f[m, n]$ and $g[m, n]$, with $G^[k, l]$ being the complex %conjugate of $G[k, l]$.
 
 \end{document}
