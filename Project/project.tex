@@ -1,0 +1,89 @@
+\title{Final Project Instructions}
+\author{}
+\date{Due: 24th November before 11:55 pm}
+
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,xcolor}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{soul}
+\usepackage[margin=0.4in]{geometry}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\maketitle
+
+\section*{Project Guidelines}
+\begin{itemize}
+    \item Projects should be done in groups — the same groups as for your homeworks.
+    \item Each group member should have a unique individual contribution to the project (which must be stated clearly in your final report), while being aware of what the other group members contributed.
+    \item Your project can be either a research paper implementation or an original idea. If you want feedback on the complexity or feasibility of your project, please consult with the instructor or Suyash.
+    \item Your project work may contribute to your thesis, but the work submitted for this course must be done during this semester, as a separate deliverable.
+    \item \textbf{Project due date:} One week after finals. You will need to submit a report and participate in a viva, during which you will demo your project and answer questions about it.
+    \item The final report should briefly describe the problem statement, the main algorithm(s) implemented, the datasets used, a detailed description of the results, and a conclusion that includes an analysis of the strengths and weaknesses of your implementation or algorithm.
+\end{itemize}
+
+\subsection*{Programming Languages and Tools}
+
+You may use MATLAB, C, C++, Java, Python (including packages such as OpenCV, ITK, etc.) for your project. However, invoking others' software is not substantial enough. Your project must include a non-trivial coding component. If software for the research paper you are implementing is already available, it should only be used for comparison. You are expected to implement the paper on your own. Please consult with the instructor or Suyash for clarifications.
+
+\subsection*{Datasets for Image Processing Projects}
+
+Here are some useful links to datasets for image processing projects:
+\section*{Links to Image Datasets}
+\begin{itemize}
+    \item \href{http://www.cvpapers.com/datasets.html}{Computer vision datasets online}
+    \item \href{http://www.cs.columbia.edu/CAVE/databases/}{Datasets from the CAVE Lab, Columbia University}
+    \item \href{http://www.cs.cmu.edu/~cil/v-images.html}{From CMU}
+    \item \href{http://homepages.inf.ed.ac.uk/rbf/CVonline/Imagedbase.htm}{CV-online Image databases}
+    \item \href{http://www.iro.umontreal.ca/~mignotte/TestImages.html}{Database from Université de Montréal}
+    \item \href{http://www-cvr.ai.uiuc.edu/ponce_grp/data/}{Datasets from UIUC}
+    \item \href{http://research.microsoft.com/en-us/projects/objectclassrecognition/}{Object recognition datasets from Microsoft Research}
+    \item \href{http://www.vision.caltech.edu/Image_Datasets/Caltech101/}{Object Recognition/detection dataset}
+    \item \href{http://www.cs.utexas.edu/~grauman/courses/spring2008/datasets.htm}{Object recognition/detection datasets}
+    \item \href{http://www.ee.columbia.edu/ln/dvmm/downloads/authsplcuncmp/}{Image splicing dataset}
+\end{itemize}
+
+
+\section*{Project Topic}
+
+This year, each group will build an image compression engine based on the JPEG algorithm, which will be covered in class soon. You can start by reviewing the slides on image compression, which are available now. 
+
+\subsection*{Marks Distribution}
+
+The project is worth 15 marks. The breakdown is as follows:
+\begin{itemize}
+    \item \textbf{8 marks:} Basic implementation of the algorithm on grayscale images, including correctness and numerical results evaluated via the RMSE versus BPP curve. The implementation should include:
+    \begin{itemize}
+        \item Computation of the 2D DCT coefficients of non-overlapping image patches (existing implementations can be used).
+        \item Implementation of the quantization step.
+        \item Implementation of the Huffman tree (existing implementations may be used, or you can code your own for flexibility).
+        \item Writing the compressed data to a file in a specified format, and ensuring the program can read the file and accurately display the compressed image.
+    \end{itemize}
+    You should simulate different quality factors and plot a graph of RMSE versus BPP for at least 20 different images. RMSE (relative root mean squared error) is calculated between the original image and its compressed version, and BPP (bits per pixel) is the size of the image in bits divided by the number of pixels.
+    
+    \item \textbf{7 marks:} Innovation on your part, which may include (but is not limited to) the following:
+    \begin{itemize}
+        \item Extensive comparison to an existing implementation of JPEG (e.g., MATLAB or GIMP) in terms of experiments on different types of quantization matrices, Huffman table settings, or other parameters.
+        \item Experiments on color images in addition to grayscale images.
+        \item Implementation of a research paper from the list below.
+        \item Thorough understanding of a research paper from the list below.
+        \item Extensive comparison of your implementation with a PCA-based image compression technique on a class of images (e.g., face images, vehicle images, etc.).
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Research Papers on Image Compression}
+
+Below is a list of research papers on image compression that you can consider for your project:
+\begin{itemize}
+    \item M. Mainberger and J. Weickert, ``Edge-Based Image Compression with Homogeneous Diffusion'', CAIP 2009.
+    \item C. Schmaltz, J. Weickert and A. Bruhn, ``Beating the Quality of JPEG 2000 with Anisotropic Diffusion'', DAGM 2009.
+    \item Osman Gokhan Sezer, Onur G. Guleryuz and Yucel Altunbasak, ``Approximation and Compression With Sparse Orthonormal Transforms'', IEEE Transactions on Image Processing, 2015.
+    \item Haoming Chen and Bing Zeng, ``New Transforms Tightly Bounded by DCT and KLT'', IEEE Signal Processing Letters, 2012.
+    \item A. K. Jain, ``A sinusoidal family of unitary transforms'', IEEE Trans. Patt. Anal. Mach. Intell., vol. 1, no. 4, pp. 356–365, Oct. 1979.
+    \item Shuyuan Zhu, Siu-Kei Au Yeung and Bing Zeng, ``R-D Performance Upper Bound of Transform Coding for 2-D Directional Sources'', IEEE Signal Processing Letters, vol. 16, no. 10, Oct. 2009.
+\end{itemize}
+
+\end{document}
