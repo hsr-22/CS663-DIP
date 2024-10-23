@@ -1,43 +1,30 @@
 clear; close all;
+
 tic;
 
 train_set = [];
-train_sub = [];
+train_index = [];
 test_set = [];
-test_sub = [];
-
+test_index = [];
 
 for i = 1:32
-    imagefiles = dir("./ORL/s" + num2str(i) + "/*.pgm");
+    image = dir("../../ImageDatabase/ORL/s" + num2str(i) + "/*.pgm");
 
-    for ii = 1:length(imagefiles)
-        currentfilename = imagefiles(ii).folder + "/" + imagefiles(ii).name;
-        currentimage = im2double(imread(currentfilename));
+    for j = 1:length(image)
+        file = image(j).folder + "/" + image(j).name;
+        img = im2double(imread(file));
 
-        if (ii <= 6)
-            train_set = cat(2, train_set, currentimage(:));
-            train_sub = cat(2, train_sub, i);
-
+        if (j <= 6)
+            train_set = cat(2, train_set, img(:));
+            train_index = cat(2, train_index, i);
         else
-            test_set = cat(2, test_set, currentimage(:));
-            test_sub = cat(2, test_sub, i);
+            test_set = cat(2, test_set, img(:));
+            test_index = cat(2, test_index, i);
         end
+
     end
+
 end
-
-
-for i = 33:40
-    imagefiles = dir("./ORL/s" + num2str(i) + "/*.pgm");
-
-    for ii = 7:length(imagefiles)
-        currentfilename = imagefiles(ii).folder + "/" + imagefiles(ii).name;
-        currentimage = im2double(imread(currentfilename));
-
-        test_set = cat(2, test_set, currentimage(:));
-        test_sub = cat(2, test_sub, -1);
-    end
-end
-
 
 n_train = size(train_set, 2);
 n_test = size(test_set, 2);
@@ -45,90 +32,114 @@ mean_vector = mean(train_set, 2);
 
 X = train_set - mean_vector;
 Y = test_set - mean_vector;
+k = [1, 2, 3, 5, 10, 15, 20, 30, 50, 75, 100, 150, 170];
 
-
-[U, S, V] = svd(X);
-
-k = 75;
-threshold_values = linspace(70, 300, 100);
-best_score = 0;
-best_threshold = 0;
-true_positives = 0;
-false_positives = 0;
-true_negatives = 0;
-false_negatives = 0;
-recognition_rate = 0;
-
-for threshold_index = 1:length(threshold_values)
-    threshold = threshold_values(threshold_index);
-    % threshold = 100;
-    true_negative_count = 0;
-    false_negative_count = 0;
-
-    true_positive_count = 0;
-    false_positive_count = 0;
-
-    eigen_space = U(:, 1:k);
-    eigen_coef = (eigen_space') * X;
-    test_coef = (eigen_space') * Y;
-    recognition_count = 0;
-
-    for j = 1:n_test
-        error = sum((eigen_coef - test_coef(:, j)).^2);
-        [m, index] = min(error);
-
-        if (m > threshold)
-            % This means there are no matching eigen faces
-            if (test_sub(j) == -1)
-                true_negative_count = true_negative_count + 1;
-            else
-                false_negative_count = false_negative_count + 1;
-            end
-
-        else
-            % This means there are matching eigen faces
-            if (test_sub(j) == -1)
-                false_positive_count = false_positive_count + 1;
-            else
-                true_positive_count = true_positive_count + 1;
-
-                if train_sub(index) == test_sub(j)
-                    recognition_count = recognition_count + 1;
-                end
-            end
-        end
-    end
-
-    specificity = true_negative_count / (true_negative_count + false_positive_count);
-    accuracy = (true_positive_count + true_negative_count) / n_test;
-    f1_score = true_positive_count / (true_positive_count + 0.5 * (false_positive_count + false_negative_count));
-    recall = true_positive_count / (true_positive_count + false_negative_count);
-    score = false_positive_count + false_negative_count;
+%% Get eigen space and eigen coefficients
+%% using svd
+[U, S, V] = svds(X,k(end));
 
 
 
-    if (recall > best_score)
-        best_score = recall;
-        accuracy_ = accuracy;
-        f1_score_ = f1_score;
-        specificity_ = specificity;
-        recall_ = recall;
-        best_threshold = threshold;
-        false_positives = false_positive_count;
-        false_negatives = false_negative_count;
-        true_positives = true_positive_count;
-        true_negatives = true_negative_count;
-        recognition_rate = recognition_count / n_test;
-    end
+% Normalizing the eigen vectors
+for i = 1:size(U, 2)
+    U(:, i) = U(:, i) / norm(U(:, i));
 end
 
+%--------------------------------------------------------------
 
-fprintf("Accuracy: %f\n", accuracy_);
-fprintf("F1 Score: %f\n", f1_score_);
-fprintf("Recall: %f\n", recall_);
-fprintf("Best Threshold: %f\n", best_threshold);
-fprintf("Confusion matrix:\n");
-fprintf("TP: %d\tFP: %d\n", true_positives, false_positives);
-fprintf("FN: %d\tTN: %d\n", false_negatives, true_negatives);
-fprintf("Recognition rate: %f\n", recognition_rate);
+recog_rate = zeros(size(k));
+failed_recog_hist = zeros(size(k));
+success_recog_hist = zeros(size(k));
+
+for i = 1:length(k)
+    eigen_space = U(:, 1:k(i));
+    eigen_coef = (eigen_space') * X; 
+    test_coef = (eigen_space') * Y; % test set coefficients
+    recog_count = 0;
+    failed_recog_error = 0;
+    success_recog_error = 0;
+
+    for j = 1:n_test
+        [m, index] = min(sum((eigen_coef - test_coef(:, j)).^2));
+
+        if train_index(index) == test_index(j)
+            recog_count = recog_count + 1;
+            success_recog_error = success_recog_error + m;
+        else
+            failed_recog_error = failed_recog_error + m;
+        end
+
+    end
+
+    recog_rate(i) = recog_count / n_test;
+    failed_recog_hist(i) = failed_recog_error / (n_test-recog_count);
+    success_recog_hist(i) = success_recog_error / recog_count;
+end
+
+% Plotting the recognition rate
+figure;
+plot(k, recog_rate, 'o-', 'LineWidth', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'blue');
+grid on;
+title('Recognition Rate (ORL)', 'FontSize', 18, 'FontWeight', 'bold');
+xlabel('Number of Eigenfaces (k)', 'FontSize', 15, 'FontWeight', 'bold');
+ylabel('Recognition Rate', 'FontSize', 15, 'FontWeight', 'bold');
+set(gca, 'FontSize', 12, 'FontWeight', 'bold');
+
+% Plotting the failed recognition error
+figure;
+plot(k(2:end), failed_recog_hist(2:end), 'o-', 'LineWidth', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'red');
+grid on;
+
+title('Failed Recognition Error (ORL)', 'FontSize', 18, 'FontWeight', 'bold');
+xlabel('Number of Eigenfaces (k)', 'FontSize', 15, 'FontWeight', 'bold');
+ylabel('Failed Recognition Error', 'FontSize', 15, 'FontWeight', 'bold');
+set(gca, 'FontSize', 12, 'FontWeight', 'bold');
+
+% Plotting the successful recognition error
+figure;
+plot(k(2:end), success_recog_hist(2:end), 'o-', 'LineWidth', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'green');
+grid on;
+
+title('Successful Recognition Error (ORL)', 'FontSize', 18, 'FontWeight', 'bold');
+xlabel('Number of Eigenfaces (k)', 'FontSize', 15, 'FontWeight', 'bold');
+ylabel('Successful Recognition Error', 'FontSize', 15, 'FontWeight', 'bold');
+set(gca, 'FontSize', 12, 'FontWeight', 'bold');
+
+% Exclude the first point from recog_rate if needed to match sizes
+if length(recog_rate) ~= length(failed_recog_hist)
+    recog_rate = recog_rate(2:end);  % Remove the first point from recog_rate
+    k_recog = k(2:end);              % Adjust corresponding k values
+else
+    k_recog = k;
+end
+
+% Create a new figure for the combined plot
+figure;
+
+% First y-axis for recognition rate
+yyaxis left;
+plot(k_recog, recog_rate, 'o-', 'LineWidth', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'blue');
+ylabel('Recognition Rate', 'FontSize', 15, 'FontWeight', 'bold');
+ylim([0 1]);  % Since recog_rate is between 0 and 1
+set(gca, 'FontSize', 12, 'FontWeight', 'bold');
+grid on;
+
+% Title and x-axis label
+title('Recognition and Error Rates (ORL)', 'FontSize', 18, 'FontWeight', 'bold');
+xlabel('Number of Eigenfaces (k)', 'FontSize', 15, 'FontWeight', 'bold');
+
+% Second y-axis for failed and successful recognition errors
+yyaxis right;
+plot(k(2:end), failed_recog_hist(2:end), 'o-', 'LineWidth', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'red');
+hold on;
+plot(k(2:end), success_recog_hist(2:end), 'o-', 'LineWidth', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'green');
+ylabel('Recognition Errors', 'FontSize', 15, 'FontWeight', 'bold');
+
+% Additional formatting
+ylim([0 200]);  % Assuming the error rates are in the range of 0 to 100
+legend({'Recognition Rate', 'Failed Recognition Error', 'Successful Recognition Error'}, 'Location', 'best');
+
+set(gca, 'FontSize', 12, 'FontWeight', 'bold');
+hold off;
+
 toc;
