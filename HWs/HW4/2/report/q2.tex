@@ -9,128 +9,132 @@
 \setlength{\parindent}{0pt}
 \graphicspath{{../images/}}
 
-\title{CS663: Digital Image Processing - Homework 3}
+\title{CS663: Digital Image Processing - Homework 4}
 \author{Harsh $\vert$ Pranav $\vert$ Swayam} 
-\date{October 1, 2024}
+\date{October 22, 2024}
 
 \begin{document}
 
 \maketitle
-\section{Homework 3 - Question 1}
+\flushleft
+\section*{Homework 4 - Question 2}
 
-For both the parts of the question, we have performed filtering for parameter values 40 and 80 after doing appropriate padding. The results are shown below.
+The problem involves maximizing a quadratic form subject to constraints, using the method of Lagrange multipliers. The matrix $C$ is symmetric, and we aim to find the eigenvectors and eigenvalues of $C$. The solution proceeds in two parts: maximizing $J_1(f)$ and $J_2(g)$.
 
-\begin{figure}[!htb]
-    \centering
-    \begin{minipage}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{Original_Image.png}
-        % \caption{Noisy \texttt{barbara256}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{Fourier_Transform.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-\end{figure}
+\subsection*{Part 1: Maximizing $J_1(f)$}
+We aim to maximize:
+\[
+J_1(f) = f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)
+\]
+where:
+- $C$ is a symmetric matrix,
+- $f$ is the vector we are optimizing,
+- $\lambda_1$ and $\lambda_2$ are Lagrange multipliers,
+- The constraints are $f^T f = 1$ (normalization) and $f^T e = 0$ (orthogonality).
 
-\vspace{-10pt}
+\subsubsection*{Taking the derivative w.r.t. $f$}
 
-\subsection*{(a) Ideal Low Pass Filter}
+To find the critical points, we take the derivative of $J_1(f)$ with respect to $f$:
+\[
+\frac{\partial}{\partial f} (f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)) = 2 C f - 2 \lambda_1 f - \lambda_2 e 
+\]
+Setting the total derivative to zero:
+\[
+2 C f - 2 \lambda_1 f - \lambda_2 e = 0
+\]
+which simplifies to:
+\[
+C f = \lambda_1 f + \frac{\lambda_2}{2} e
+\]
 
-For cutoff frequency 40:
+\subsubsection*{Dot product with $e$}
 
-\begin{figure}[!htb]
-    \centering
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Ideal_Low_Pass_Filter.png}
-        % \caption{Noisy \texttt{barbara256}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Fourier_Transform_Filtered.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Filtered_Image.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-\end{figure}
+Next, we take the dot product of both sides with $e$:
+\[
+e^T C f = \lambda_1 e^T f + \frac{\lambda_2}{2} e^T e
+\]
+Since $f^T e = 0$ (from the orthogonality constraint), this simplifies to:
+\[
+e^T C f = \frac{\lambda_2}{2} e^T e
+\]
+Solving for $\lambda_2$:
+\[
+\lambda_2 = \frac{2 e^T C f}{e^T e}
+\]
+However, from the assumption that $f$ is orthogonal to $e$, we have $e^T C f = 0$, which implies:
+\[
+\lambda_2 = 0
+\]
 
-For cutoff frequency 80:
+\subsubsection*{Conclusion for $f$}
 
-\begin{figure}[!htb]
-    \centering
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Ideal_Low_Pass_Filter_80.png}
-        % \caption{Noisy \texttt{barbara256}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Fourier_Transform_Filtered_80.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Filtered_Image_80.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-\end{figure}
+With $\lambda_2 = 0$, the equation simplifies to:
+\[
+C f = \lambda_1 f
+\]
+Thus, $f$ is an eigenvector of $C$ with eigenvalue $\lambda_1$. Since we assumed distinct eigenvalues, this eigenvalue corresponds to the second-largest eigenvalue.
 
-\newpage
-\textbf{Observations:} 
-\begin{itemize}[noitemsep]
-    \item As the cutoff frequency increases, it makes higher frequency components visible. This is evident from the fact that the image becomes more sharp as the cutoff frequency increases.
-    \item There is a presence of ringing artifacts in the filtered image.
-\end{itemize}
+\subsection*{Part 2: Maximizing $J_2(g)$}
+Next, we maximize:
+\[
+J_2(g) = g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)
+\]
+where the constraints are $g^T g = 1$ (normalization), $f^T g = 0$ (orthogonality to $f$), and $e^T g = 0$ (orthogonality to $e$).
 
-\subsection*{(b) Gaussian Low Pass Filter}
+\subsubsection*{Taking the derivative w.r.t. $g$}
 
-For $\sigma$ = 40:
+Taking the derivative of $J_2(g)$ with respect to $g$:
 
-\begin{figure}[!htb]
-    \centering
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Low_Pass_Filter.png}
-        % \caption{Noisy \texttt{barbara256}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Fourier_Transform_Filtered.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Filtered_Image.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-\end{figure}
+\[
+\frac{\partial}{\partial f} (g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)) = 2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e 
+\]
 
-For $\sigma$ = 80:
+Setting the total derivative to zero:
+\[
+2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e = 0
+\]
+which simplifies to:
+\[
+C g = {\lambda_1} g + \frac{\lambda_2}{2} f + \frac{\lambda_3}{2} e
+\]
 
-\begin{figure}[!htb]
-    \centering
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Low_Pass_Filter_80.png}
-        % \caption{Noisy \texttt{barbara256}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Fourier_Transform_Filtered_80.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Filtered_Image_80.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-\end{figure}
+\subsubsection*{Dot product with $e$}
 
-\textbf{Observations:}
-\begin{itemize}[noitemsep]
-    \item As the value of $\sigma$ increases, the image becomes more sharp.
-    \item The ringing artifacts are less prominent in the Gaussian filter as compared to the ideal filter.
-    \item Weakening of high frequency components (contrary to elimination). Hence, the Gaussian filter is more smooth as compared to the ideal filter.
-\end{itemize}
+Taking the dot product with $e$:
+\[
+e^T C g = {\lambda_1} e^T g + \frac{\lambda_2}{2} e^T f + \frac{\lambda_3}{2} e^T e
+\]
+Using the constraints $e^T g = 0$ and $e^T f = 0$, this simplifies to:
+\[
+e^T C g = \frac{\lambda_3}{2} e^T e
+\]
+Solving for $\lambda_3$:
+\[
+\lambda_3 = \frac{2 e^T C g}{e^T e}
+\]
+Since $e^T C g = 0$, we conclude:
+\[
+\lambda_3 = 0
+\]
+
+\subsubsection*{Dot product with $f$}
+
+Now, taking the dot product with $f$:
+\[
+f^T C g = {\lambda_1} f^T g + \frac{\lambda_2}{2} f^T f + \frac{\lambda_3}{2} f^T e
+\]
+Using the constraints $f^T g = 0$ and $f^T e = 0$, this simplifies to:
+\[
+f^T C g = \frac{\lambda_2}{2} f^T f = \frac{\lambda_2}{2}
+\]
+Thus, $\lambda_2 = 0$.
+
+\subsubsection*{Conclusion for $g$}
+
+With $\lambda_2 = 0$ and $\lambda_3 = 0$, the equation simplifies to:
+\[
+C g = {\lambda_1} g
+\]
+Thus, $g$ is an eigenvector of $C$, corresponding to the third-largest eigenvalue.
 
 \end{document}

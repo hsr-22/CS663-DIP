@@ -9,128 +9,166 @@
 \setlength{\parindent}{0pt}
 \graphicspath{{../images/}}
 
-\title{CS663: Digital Image Processing - Homework 3}
+\title{CS663: Digital Image Processing - Homework 4}
 \author{Harsh $\vert$ Pranav $\vert$ Swayam} 
-\date{October 1, 2024}
+\date{October 22, 2024}
 
 \begin{document}
 
 \maketitle
-\section{Homework 3 - Question 1}
+\flushleft
+\section*{Homework 4 - Question 1}
 
-For both the parts of the question, we have performed filtering for parameter values 40 and 80 after doing appropriate padding. The results are shown below.
+\subsection*{Part a -}
 
-\begin{figure}[!htb]
-    \centering
-    \begin{minipage}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{Original_Image.png}
-        % \caption{Noisy \texttt{barbara256}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{Fourier_Transform.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-\end{figure}
+PCA matrix is defined as:
+\[
+C = \frac{1}{N-1} X  X^T
+\]
 
-\vspace{-10pt}
 
-\subsection*{(a) Ideal Low Pass Filter}
+where X is the vector:
 
-For cutoff frequency 40:
+\[
+X=\begin{bmatrix} x_1 & x_2 \dots x_{n-1} & x_n\end{bmatrix}
+\]
 
-\begin{figure}[!htb]
-    \centering
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Ideal_Low_Pass_Filter.png}
-        % \caption{Noisy \texttt{barbara256}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Fourier_Transform_Filtered.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Filtered_Image.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-\end{figure}
+\subsubsection*{Symmetry}
 
-For cutoff frequency 80:
+For a Matrix m to be symmetric it should satisfy the condition,
 
-\begin{figure}[!htb]
-    \centering
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Ideal_Low_Pass_Filter_80.png}
-        % \caption{Noisy \texttt{barbara256}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Fourier_Transform_Filtered_80.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Filtered_Image_80.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-\end{figure}
+\[
+M = M^T
+\]
 
-\newpage
-\textbf{Observations:} 
-\begin{itemize}[noitemsep]
-    \item As the cutoff frequency increases, it makes higher frequency components visible. This is evident from the fact that the image becomes more sharp as the cutoff frequency increases.
-    \item There is a presence of ringing artifacts in the filtered image.
-\end{itemize}
+so trying that out wit C we get:
 
-\subsection*{(b) Gaussian Low Pass Filter}
+\[
+C^T = (\frac{1}{N-1} XX^T)^T
+\]
+\[
+C^T = \frac{1}{N-1} (X^T)^T(X)^T
+\]
+\[
+C^T = \frac{1}{N-1} XX^T
+\]
+Finally,
+\[
+C^T = C
+\]
 
-For $\sigma$ = 40:
+Hence PCA matrix is symmetric.
 
-\begin{figure}[!htb]
-    \centering
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Low_Pass_Filter.png}
-        % \caption{Noisy \texttt{barbara256}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Fourier_Transform_Filtered.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Filtered_Image.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-\end{figure}
+\subsubsection*{Semi definite}
 
-For $\sigma$ = 80:
+For a matrix to to positive semi definite, it should satisfy the equation $v^TMv>=0$ for any vector $v$.
 
-\begin{figure}[!htb]
-    \centering
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Low_Pass_Filter_80.png}
-        % \caption{Noisy \texttt{barbara256}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Fourier_Transform_Filtered_80.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-    % \hfill
-    \begin{minipage}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Gaussian_Filtered_Image_80.png}
-        % \caption{Noisy \texttt{kodak24}}
-    \end{minipage}
-\end{figure}
+\[
+v^TCv = \frac{1}{N-1} v^TXX^Tv
+\]
+So this can be re written as:
+\[
+v^TCv = \frac{1}{N-1} \|{v^T X}\|^2
+\]
 
-\textbf{Observations:}
-\begin{itemize}[noitemsep]
-    \item As the value of $\sigma$ increases, the image becomes more sharp.
-    \item The ringing artifacts are less prominent in the Gaussian filter as compared to the ideal filter.
-    \item Weakening of high frequency components (contrary to elimination). Hence, the Gaussian filter is more smooth as compared to the ideal filter.
-\end{itemize}
+And this quantity is surely greater than equal to 0 so the pcA matrix is positive semi definite.
+
+\subsection*{Part b - }
+
+Let $M$ be a symmetric matrix, and let $v_1$ and $v_2$ be two eigenvectors corresponding to distinct eigenvalues $\lambda_1$ and $\lambda_2$, respectively. We have the following eigenvalue equations:
+
+\[
+M v_1 = \lambda_1 v_1 \quad \text{and} \quad M v_2 = \lambda_2 v_2
+\]
+
+Taking the inner product of $v_1^T$ with both sides of the second equation:
+
+\[
+v_1^T M v_2 = \lambda_2 v_1^T v_2
+\]
+
+Since $M$ is symmetric, we know that:
+
+\[
+v_1^T M v_2 = (M v_1)^T v_2 = \lambda_1 v_1^T v_2
+\]
+
+Thus, we have:
+
+\[
+\lambda_1 v_1^T v_2 = \lambda_2 v_1^T v_2
+\]
+
+For $\lambda_1 \neq \lambda_2$, the only solution to this equation is:
+
+\[
+v_1^T v_2 = 0
+\]
+
+This shows that $v_1$ and $v_2$ are orthogonal.
+
+To normalize the eigenvectors, we scale each eigenvector so that:
+
+\[
+\|v_i\| = 1 \quad \text{for each eigenvector} \, v_i
+\]
+
+Thus, the eigenvectors of the symmetric matrix $C$ are orthonormal.
+
+
+\subsection*{Part c - }
+
+We are approximating the difference between the original data points \( x_i \) and their truncated versions \( \tilde{x}_i \) by truncating the eigen-coefficients for the smallest eigenvalues.
+
+The difference is given by:
+
+\[
+\| x_i - \tilde{x}_i \|^2 = \| V (\alpha_i - \tilde{\alpha}_i) \|^2
+\]
+
+where \( \alpha_i \) are the original eigen-coefficients and \( \tilde{\alpha}i \) are the truncated eigen-coefficients. The truncation sets \( \tilde{\alpha}{il} = 0 \) for \( l > k \), so:
+
+\[
+\| x_i - \tilde{x}i \|^2 = \sum{l=k+1}^d \alpha_{il}^2
+\]
+
+Averaging over all data points gives:
+
+\[
+\frac{1}{N} \sum_{i=1}^N \| x_i - \tilde{x}i \|^2 = \frac{1}{N} \sum{i=1}^N \sum_{l=k+1}^d \alpha_{il}^2
+\]
+
+The eigen-coefficients \( \alpha_{il} \) have variance \( \lambda_l \), the eigenvalue corresponding to the \( l \)-th eigenvector. Thus, the expected squared difference is approximately:
+
+\[
+\sum_{l=k+1}^d \lambda_l
+\]
+
+This is small when the eigenvalues \( \lambda_{k+1}, \lambda_{k+2}, \dots, \lambda_d \) are small, as they represent the least significant components of the data's variation.
+
+\subsection*{Part  -}
+
+The problem describes a situation where one variable (denoted as \( X_1 \)) has a much larger variance than the other (denoted as \( X_2 \)). This means that the covariance matrix of the data has one large eigenvalue (corresponding to the direction of \( X_1 \)) and one small eigenvalue (corresponding to \( X_2 \)).
+
+The eigenvectors are:
+
+\[
+\text{For the larger eigenvalue (100):} \quad (1; 0)
+\]
+\[
+\text{For the smaller eigenvalue (1):} \quad (0; 1)
+\]
+
+Thus, the covariance matrix in this case has the form:
+
+\[
+\begin{pmatrix}
+100 & 0 \\
+0 & 1
+\end{pmatrix}
+\]
+
+where 100 and 1 are the eigenvalues corresponding to the directions of \( X_1 \) and \( X_2 \), respectively.
+
 
 \end{document}
