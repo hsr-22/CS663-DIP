@@ -49,26 +49,27 @@
 \maketitle
 \section{Homework 4 - Question 5}
 
-Our classifier is unaware of the concept of a person not being present in the training set. This is a problem because the classifier will always try to find the closest match, even if the person is not present in the training set. This will lead to them being incorrectly identified as the closest match in the training set.
-\\
-\\
+Our classifier is unaware of the concept of a person not being present in the training set. This is a problem because the classifier will always try to find the closest match, even if the person is not present in the training set. This will lead to them being incorrectly identified as the closest matching person in the training set.
+\vspace{5pt}
+
 To analyze a suitable method for identifying people as not being present in the original training set, we considered a few ideas. Most of them revolved around the idea of considering a threshold for some form of error, be that the recognition error or the distance between the test image and the closest image in the training set, or with all images with the same index as the closest image, or even just all images in the training set. 
+\vspace{5pt}
 
 In the end, we took the simplest approach of considering the error with the closest image, and if that error was above a certain threshold, we would consider the person as not being present in the training set.
-\\
-\\
+
 Plotting the recognition rate and mean recognition error for images, we see that the recognition rate is quite high starting from \texttt{k} values as low as 10, and remain mostly stable. 
 
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=0.7\textwidth]{simple_plot.jpg}
-    \caption{Recognition Rate and mean Recognition Errors for different classes using ORL dataset}
+    \includegraphics[width=0.65\textwidth]{simple_plot.jpg}
+    \caption{Recognition Rate and Errors for different classes (ORL dataset)}
 \end{figure}
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=0.7\textwidth]{box_plot.jpg}
-    \caption{Recognition Rate and Recognition Errors box-whiskers for different classes using ORL dataset}
+    \caption{Recognition Rate and Errors box-whiskers for different classes}
 \end{figure}
+% \newpage
 
 While correctly labelled images and images with no actual matching identity have sufficient separation, the images with incorrect labels lie between the two. 
 
@@ -140,7 +141,7 @@ Next, we consider the confusion matrix excluding images of people in the trainin
 \end{tcolorbox}
 
 We can see that while accuracy is biased towards increasing TN with the highest possible count, and the recall is biased towards the making FN 0 by reducing the threshold drastically, F1 scores seems to be the most balanced metric. However, the threshold given by best accuracy gives more TPs on the exclusion of images with incorrect labels.
-\\
-\\
+\vspace{5pt}
+
 In the end, the choice of threshold should depend on the application.
 \end{document}
