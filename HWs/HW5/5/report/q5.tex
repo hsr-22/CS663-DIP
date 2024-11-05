@@ -1,0 +1,140 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{fancyvrb}
+\usepackage{enumitem}
+\usepackage{matlab-prettifier}
+\setlength{\parindent}{0pt}
+\graphicspath{{../images/}}
+
+\title{CS663: Digital Image Processing - Homework 5}
+\author{Harsh $\vert$ Pranav $\vert$ Swayam} 
+\date{November 6, 2024}
+
+\begin{document}
+
+\maketitle
+\flushleft
+\section*{Homework 5 - Question 5}
+
+The problem involves maximizing a quadratic form subject to constraints, using the method of Lagrange multipliers. The matrix $C$ is symmetric, and we aim to find the eigenvectors and eigenvalues of $C$. The solution proceeds in two parts: maximizing $J_1(f)$ and $J_2(g)$.
+
+\subsection*{Part 1: Maximizing $J_1(f)$}
+We aim to maximize:
+\[
+J_1(f) = f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)
+\]
+where:
+- $C$ is a symmetric matrix,
+- $f$ is the vector we are optimizing,
+- $\lambda_1$ and $\lambda_2$ are Lagrange multipliers,
+- The constraints are $f^T f = 1$ (normalization) and $f^T e = 0$ (orthogonality).
+
+\subsubsection*{Taking the derivative w.r.t. $f$}
+
+To find the critical points, we take the derivative of $J_1(f)$ with respect to $f$:
+\[
+\frac{\partial}{\partial f} (f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)) = 2 C f - 2 \lambda_1 f - \lambda_2 e 
+\]
+Setting the total derivative to zero:
+\[
+2 C f - 2 \lambda_1 f - \lambda_2 e = 0
+\]
+which simplifies to:
+\[
+C f = \lambda_1 f + \frac{\lambda_2}{2} e
+\]
+
+\subsubsection*{Dot product with $e$}
+
+Next, we take the dot product of both sides with $e$:
+\[
+e^T C f = \lambda_1 e^T f + \frac{\lambda_2}{2} e^T e
+\]
+Since $f^T e = 0$ (from the orthogonality constraint), this simplifies to:
+\[
+e^T C f = \frac{\lambda_2}{2} e^T e
+\]
+Solving for $\lambda_2$:
+\[
+\lambda_2 = \frac{2 e^T C f}{e^T e}
+\]
+However, from the assumption that $f$ is orthogonal to $e$, we have $e^T C f = 0$, which implies:
+\[
+\lambda_2 = 0
+\]
+
+\subsubsection*{Conclusion for $f$}
+
+With $\lambda_2 = 0$, the equation simplifies to:
+\[
+C f = \lambda_1 f
+\]
+Thus, $f$ is an eigenvector of $C$ with eigenvalue $\lambda_1$. Since we assumed distinct eigenvalues, this eigenvalue corresponds to the second-largest eigenvalue.
+
+\subsection*{Part 2: Maximizing $J_2(g)$}
+Next, we maximize:
+\[
+J_2(g) = g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)
+\]
+where the constraints are $g^T g = 1$ (normalization), $f^T g = 0$ (orthogonality to $f$), and $e^T g = 0$ (orthogonality to $e$).
+
+\subsubsection*{Taking the derivative w.r.t. $g$}
+
+Taking the derivative of $J_2(g)$ with respect to $g$:
+
+\[
+\frac{\partial}{\partial f} (g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)) = 2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e 
+\]
+
+Setting the total derivative to zero:
+\[
+2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e = 0
+\]
+which simplifies to:
+\[
+C g = {\lambda_1} g + \frac{\lambda_2}{2} f + \frac{\lambda_3}{2} e
+\]
+
+\subsubsection*{Dot product with $e$}
+
+Taking the dot product with $e$:
+\[
+e^T C g = {\lambda_1} e^T g + \frac{\lambda_2}{2} e^T f + \frac{\lambda_3}{2} e^T e
+\]
+Using the constraints $e^T g = 0$ and $e^T f = 0$, this simplifies to:
+\[
+e^T C g = \frac{\lambda_3}{2} e^T e
+\]
+Solving for $\lambda_3$:
+\[
+\lambda_3 = \frac{2 e^T C g}{e^T e}
+\]
+Since $e^T C g = 0$, we conclude:
+\[
+\lambda_3 = 0
+\]
+
+\subsubsection*{Dot product with $f$}
+
+Now, taking the dot product with $f$:
+\[
+f^T C g = {\lambda_1} f^T g + \frac{\lambda_2}{2} f^T f + \frac{\lambda_3}{2} f^T e
+\]
+Using the constraints $f^T g = 0$ and $f^T e = 0$, this simplifies to:
+\[
+f^T C g = \frac{\lambda_2}{2} f^T f = \frac{\lambda_2}{2}
+\]
+Thus, $\lambda_2 = 0$.
+
+\subsubsection*{Conclusion for $g$}
+
+With $\lambda_2 = 0$ and $\lambda_3 = 0$, the equation simplifies to:
+\[
+C g = {\lambda_1} g
+\]
+Thus, $g$ is an eigenvector of $C$, corresponding to the third-largest eigenvalue.
+
+\end{document}
