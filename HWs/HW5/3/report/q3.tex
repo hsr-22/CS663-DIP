@@ -19,122 +19,72 @@
 \flushleft
 \section*{Homework 5 - Question 3}
 
-The problem involves maximizing a quadratic form subject to constraints, using the method of Lagrange multipliers. The matrix $C$ is symmetric, and we aim to find the eigenvectors and eigenvalues of $C$. The solution proceeds in two parts: maximizing $J_1(f)$ and $J_2(g)$.
+\subsection*{Referenced Paper}
 
-\subsection*{Part 1: Maximizing $J_1(f)$}
-We aim to maximize:
-\[
-J_1(f) = f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)
-\]
-where:
-- $C$ is a symmetric matrix,
-- $f$ is the vector we are optimizing,
-- $\lambda_1$ and $\lambda_2$ are Lagrange multipliers,
-- The constraints are $f^T f = 1$ (normalization) and $f^T e = 0$ (orthogonality).
+\textbf{Title} : Image Inpainting for Irregular Holes Using Partial Convolutions
 
-\subsubsection*{Taking the derivative w.r.t. $f$}
+\textbf{Authors} : Guilin Liu, Fitsum A. Reda, Kevin J. Shih, Ting-Chun Wang, Andrew Tao, Bryan Catanzaro
 
-To find the critical points, we take the derivative of $J_1(f)$ with respect to $f$:
-\[
-\frac{\partial}{\partial f} (f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)) = 2 C f - 2 \lambda_1 f - \lambda_2 e 
-\]
-Setting the total derivative to zero:
-\[
-2 C f - 2 \lambda_1 f - \lambda_2 e = 0
-\]
-which simplifies to:
-\[
-C f = \lambda_1 f + \frac{\lambda_2}{2} e
-\]
+\textbf{Venue} : ECCV 2018
 
-\subsubsection*{Dot product with $e$}
+\textbf{Link} : \href{https://openaccess.thecvf.com/content_ECCV_2018/papers/Guilin_Liu_Image_Inpainting_for_ECCV_2018_paper.pdf}{Image Inpainting for Irregular Holes Using Partial Convolutions}
 
-Next, we take the dot product of both sides with $e$:
+\subsection*{Problem Statement}
+
+The paper addresses the problem of image inpainting specifically for irregular holes. Traditional inpainting techniques struggle with irregular hole patterns and often rely on post-processing, leading to artifacts in the generated images, such as blurriness and color inconsistencies. The method presented by Liu et al. improves the robustness and quality of inpainting by using partial convolutional layers that only consider valid (non-masked) pixels during the convolutional process. This approach ensures the inpainting model can effectively handle various hole sizes and shapes, without relying on post-processing.
+
+\subsection*{Key Concepts}
+
+1. \textbf{Partial Convolutions}: Unlike standard convolutional layers that use fixed values for missing pixels, partial convolutions condition their output based solely on valid (non-masked) pixels.
+
+2. \textbf{Mask Update Mechanism}: The model includes an automatic mask update step, which adjusts the mask during the forward pass based on which pixels were successfully processed by the convolution operation.
+
+\subsection*{Cost Function}
+
+The optimization process involves several loss functions aimed at ensuring both reconstruction accuracy and smooth transitions around the inpainted areas. The key components of the loss function include:
+
+\subsubsection*{Per-Pixel Reconstruction Loss}
+For hole pixels:
 \[
-e^T C f = \lambda_1 e^T f + \frac{\lambda_2}{2} e^T e
+L_{\text{hole}} = ||(1 - M) \odot (I_{\text{out}} - I_{\text{gt}})||_1
 \]
-Since $f^T e = 0$ (from the orthogonality constraint), this simplifies to:
+For valid pixels:
 \[
-e^T C f = \frac{\lambda_2}{2} e^T e
-\]
-Solving for $\lambda_2$:
-\[
-\lambda_2 = \frac{2 e^T C f}{e^T e}
-\]
-However, from the assumption that $f$ is orthogonal to $e$, we have $e^T C f = 0$, which implies:
-\[
-\lambda_2 = 0
+L_{\text{valid}} = ||M \odot (I_{\text{out}} - I_{\text{gt}})||_1
 \]
 
-\subsubsection*{Conclusion for $f$}
+Here:
+\begin{itemize} 
 
-With $\lambda_2 = 0$, the equation simplifies to:
-\[
-C f = \lambda_1 f
-\]
-Thus, $f$ is an eigenvector of $C$ with eigenvalue $\lambda_1$. Since we assumed distinct eigenvalues, this eigenvalue corresponds to the second-largest eigenvalue.
+\item  \( I_{\text{out}} \): The output image produced by the network.
+\item  \( I_{\text{gt}} \): The ground truth image.
+\item  \( M \): The binary mask indicating hole locations (0 for holes, 1 for valid pixels).
+\item  \( \odot \): Element-wise multiplication.
+\item  \( ||\cdot||_1 \): L1 norm, measuring absolute differences.
+\end{itemize}
 
-\subsection*{Part 2: Maximizing $J_2(g)$}
-Next, we maximize:
+\subsubsection*{Perceptual Loss}
+This loss assesses how well the output image captures high-level features compared to the ground truth by using a pretrained VGG-16 network:
 \[
-J_2(g) = g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)
+L_{\text{perceptual}} = \sum_{n=0}^{N-1} ||\Psi_n(I_{\text{out}}) - \Psi_n(I_{\text{gt}})||1 + \sum{n=0}^{N-1} ||\Psi_n(I_{\text{comp}}) - \Psi_n(I_{\text{gt}})||_1
 \]
-where the constraints are $g^T g = 1$ (normalization), $f^T g = 0$ (orthogonality to $f$), and $e^T g = 0$ (orthogonality to $e$).
+where \( \Psi_n \) represents activation maps from selected layers of VGG-16.
+\vspace{2mm}
 
-\subsubsection*{Taking the derivative w.r.t. $g$}
+*\textit{VGG-16 is a convolutional neural network architecture developed by the Visual Geometry Group at the University of Oxford. It is renowned for its simplicity and effectiveness in image classification tasks. The architecture consists of 16 layers with learnable parameters, including 13 convolutional layers and 3 fully connected layers.}
 
-Taking the derivative of $J_2(g)$ with respect to $g$:
+\subsubsection*{Style Loss}
+This term measures the similarity of style between images using Gram matrices derived from feature maps:
+\[
+L_{\text{style}} = ||G(I_{\text{out}}) - G(I_{\text{gt}})||_1
+\]
+where \( G(\cdot) \) computes the Gram matrix of features.
 
+\subsection*{Overall Loss Function}
+The total loss function combines these components to guide the training process:
 \[
-\frac{\partial}{\partial f} (g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)) = 2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e 
+L = L_{\text{hole}} + L_{\text{valid}} + \lambda_1 L_{\text{perceptual}} + \lambda_2 L_{\text{style}}
 \]
-
-Setting the total derivative to zero:
-\[
-2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e = 0
-\]
-which simplifies to:
-\[
-C g = {\lambda_1} g + \frac{\lambda_2}{2} f + \frac{\lambda_3}{2} e
-\]
-
-\subsubsection*{Dot product with $e$}
-
-Taking the dot product with $e$:
-\[
-e^T C g = {\lambda_1} e^T g + \frac{\lambda_2}{2} e^T f + \frac{\lambda_3}{2} e^T e
-\]
-Using the constraints $e^T g = 0$ and $e^T f = 0$, this simplifies to:
-\[
-e^T C g = \frac{\lambda_3}{2} e^T e
-\]
-Solving for $\lambda_3$:
-\[
-\lambda_3 = \frac{2 e^T C g}{e^T e}
-\]
-Since $e^T C g = 0$, we conclude:
-\[
-\lambda_3 = 0
-\]
-
-\subsubsection*{Dot product with $f$}
-
-Now, taking the dot product with $f$:
-\[
-f^T C g = {\lambda_1} f^T g + \frac{\lambda_2}{2} f^T f + \frac{\lambda_3}{2} f^T e
-\]
-Using the constraints $f^T g = 0$ and $f^T e = 0$, this simplifies to:
-\[
-f^T C g = \frac{\lambda_2}{2} f^T f = \frac{\lambda_2}{2}
-\]
-Thus, $\lambda_2 = 0$.
-
-\subsubsection*{Conclusion for $g$}
-
-With $\lambda_2 = 0$ and $\lambda_3 = 0$, the equation simplifies to:
-\[
-C g = {\lambda_1} g
-\]
-Thus, $g$ is an eigenvector of $C$, corresponding to the third-largest eigenvalue.
+where \( \lambda_1 \) and \( \lambda_2 \) are hyperparameters that control the weight of perceptual and style losses relative to reconstruction losses.
 
 \end{document}

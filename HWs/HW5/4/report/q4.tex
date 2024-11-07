@@ -19,122 +19,60 @@
 \flushleft
 \section*{Homework 5 - Question 4}
 
-The problem involves maximizing a quadratic form subject to constraints, using the method of Lagrange multipliers. The matrix $C$ is symmetric, and we aim to find the eigenvectors and eigenvalues of $C$. The solution proceeds in two parts: maximizing $J_1(f)$ and $J_2(g)$.
+\subsection*{Part a - Reconstruction}
 
-\subsection*{Part 1: Maximizing $J_1(f)$}
-We aim to maximize:
-\[
-J_1(f) = f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)
-\]
-where:
-- $C$ is a symmetric matrix,
-- $f$ is the vector we are optimizing,
-- $\lambda_1$ and $\lambda_2$ are Lagrange multipliers,
-- The constraints are $f^T f = 1$ (normalization) and $f^T e = 0$ (orthogonality).
+Since we know the locations of the non-zero elements, we can formulate this reconstruction problem as follows:
 
-\subsubsection*{Taking the derivative w.r.t. $f$}
+   
+   The DFT of an \( n \times n \) image \( f(x, y) \) at a frequency \( (u, v) \) is given by:
+   \[
+   F(u, v) = \sum_{x=0}^{n-1} \sum_{y=0}^{n-1} f(x, y) e^{-j 2 \pi \left( \frac{ux}{n} + \frac{vy}{n} \right)}.
+   \]
+   Since \( f(x, y) \) is sparse, we can simplify this sum to only include the non-zero locations:
+   \[
+   F(u, v) = \sum_{(x_i, y_i) \in \Omega} f(x_i, y_i) e^{-j 2 \pi \left( \frac{ux_i}{n} + \frac{vy_i}{n} \right)},
+   \]
+   where \( \Omega \) is the set of known locations with non-zero values, and \( |\Omega| = k \).
 
-To find the critical points, we take the derivative of $J_1(f)$ with respect to $f$:
-\[
-\frac{\partial}{\partial f} (f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)) = 2 C f - 2 \lambda_1 f - \lambda_2 e 
-\]
-Setting the total derivative to zero:
-\[
-2 C f - 2 \lambda_1 f - \lambda_2 e = 0
-\]
-which simplifies to:
-\[
-C f = \lambda_1 f + \frac{\lambda_2}{2} e
-\]
+   
+   The non-zero values in \( f(x, y) \) as a vector 
+   \[ f_\Omega = [f(x_1, y_1), f(x_2, y_2), \ldots, f(x_k, y_k)]^T \]
+   
+   Let \( F_m \) represent the vector of \( m \) observed DFT coefficients at frequencies \( (u_i, v_i) \) for \( i = 1, 2, \dots, m \).
+   We can set up the following linear system:
+   \[
+   F_m = A f_\Omega,
+   \]
+   where \( A \) is an \( m \times k \) matrix with entries \( A_{ij} = e^{-j 2 \pi \left( \frac{u_i x_j}{n} + \frac{v_i y_j}{n} \right)} \).
 
-\subsubsection*{Dot product with $e$}
 
-Next, we take the dot product of both sides with $e$:
-\[
-e^T C f = \lambda_1 e^T f + \frac{\lambda_2}{2} e^T e
-\]
-Since $f^T e = 0$ (from the orthogonality constraint), this simplifies to:
-\[
-e^T C f = \frac{\lambda_2}{2} e^T e
-\]
-Solving for $\lambda_2$:
-\[
-\lambda_2 = \frac{2 e^T C f}{e^T e}
-\]
-However, from the assumption that $f$ is orthogonal to $e$, we have $e^T C f = 0$, which implies:
-\[
-\lambda_2 = 0
-\]
+   If \( m \geq k \), we have enough equations to uniquely determine the \( k \) unknown values in \( f_\Omega \).
+   If \( m = k \) and \( A \) has full column rank (i.e., the rows of \( A \) are linearly independent), then \( A \) is invertible, and we can solve for \( f_\Omega \) directly:
+   \[
+   f_\Omega = A^{-1} F_m.
+   \]
+   Alternatively, if \( m > k \), we can use a least-squares approach to solve for \( f_\Omega \), which provides robustness against noise and dependencies between Fourier coefficients.
 
-\subsubsection*{Conclusion for $f$}
+\subsection*{Part b - Minimum Value of \( m \) Needed for Reconstruction}
 
-With $\lambda_2 = 0$, the equation simplifies to:
-\[
-C f = \lambda_1 f
-\]
-Thus, $f$ is an eigenvector of $C$ with eigenvalue $\lambda_1$. Since we assumed distinct eigenvalues, this eigenvalue corresponds to the second-largest eigenvalue.
+% \subsubsection*{Argument for \( m = k \): Theoretical Minimum}
+\begin{itemize}
+    \item Uniqueness Condition:
+    
+    Since we have \( k \) unknowns in \( f_\Omega \), the minimum number of independent equations needed to uniquely determine these unknowns is \( k \).
+    
+    Thus, \textbf{in an ideal, noise-free scenario}, if we collect exactly \( m = k \) DFT coefficients and ensure they are independent, we can reconstruct \( f_\Omega \) by solving a system of \( k \) equations in \( k \) unknowns.
 
-\subsection*{Part 2: Maximizing $J_2(g)$}
-Next, we maximize:
-\[
-J_2(g) = g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)
-\]
-where the constraints are $g^T g = 1$ (normalization), $f^T g = 0$ (orthogonality to $f$), and $e^T g = 0$ (orthogonality to $e$).
+    \item Mathematical Justification:
 
-\subsubsection*{Taking the derivative w.r.t. $g$}
+    With \( m = k \), the system \( F_m = A f_\Omega \) becomes exactly determined. If \( A \) has full rank, this system has a unique solution for \( f_\Omega \).
+    
+    Therefore, \textbf{\( m = k \) is the minimum number of DFT coefficients required} for unique reconstruction of \( f(x, y) \) in this idealized setting.
 
-Taking the derivative of $J_2(g)$ with respect to $g$:
+\end{itemize}
 
-\[
-\frac{\partial}{\partial f} (g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)) = 2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e 
-\]
+\subsection*{Part c - Unknown Locations of Non-Zero Elements}
 
-Setting the total derivative to zero:
-\[
-2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e = 0
-\]
-which simplifies to:
-\[
-C g = {\lambda_1} g + \frac{\lambda_2}{2} f + \frac{\lambda_3}{2} e
-\]
-
-\subsubsection*{Dot product with $e$}
-
-Taking the dot product with $e$:
-\[
-e^T C g = {\lambda_1} e^T g + \frac{\lambda_2}{2} e^T f + \frac{\lambda_3}{2} e^T e
-\]
-Using the constraints $e^T g = 0$ and $e^T f = 0$, this simplifies to:
-\[
-e^T C g = \frac{\lambda_3}{2} e^T e
-\]
-Solving for $\lambda_3$:
-\[
-\lambda_3 = \frac{2 e^T C g}{e^T e}
-\]
-Since $e^T C g = 0$, we conclude:
-\[
-\lambda_3 = 0
-\]
-
-\subsubsection*{Dot product with $f$}
-
-Now, taking the dot product with $f$:
-\[
-f^T C g = {\lambda_1} f^T g + \frac{\lambda_2}{2} f^T f + \frac{\lambda_3}{2} f^T e
-\]
-Using the constraints $f^T g = 0$ and $f^T e = 0$, this simplifies to:
-\[
-f^T C g = \frac{\lambda_2}{2} f^T f = \frac{\lambda_2}{2}
-\]
-Thus, $\lambda_2 = 0$.
-
-\subsubsection*{Conclusion for $g$}
-
-With $\lambda_2 = 0$ and $\lambda_3 = 0$, the equation simplifies to:
-\[
-C g = {\lambda_1} g
-\]
-Thus, $g$ is an eigenvector of $C$, corresponding to the third-largest eigenvalue.
+No, as multiple configurations of non-zero elements can yield identical DFT coefficients. For instance, if two different sets of pixels have the same Fourier representation due to their positions and values being interchanged.
 
 \end{document}

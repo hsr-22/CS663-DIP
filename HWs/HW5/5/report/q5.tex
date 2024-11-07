@@ -19,122 +19,144 @@
 \flushleft
 \section*{Homework 5 - Question 5}
 
-The problem involves maximizing a quadratic form subject to constraints, using the method of Lagrange multipliers. The matrix $C$ is symmetric, and we aim to find the eigenvectors and eigenvalues of $C$. The solution proceeds in two parts: maximizing $J_1(f)$ and $J_2(g)$.
+\subsection*{Part a - Why the Standard Least Squares Solution Fails}
 
-\subsection*{Part 1: Maximizing $J_1(f)$}
-We aim to maximize:
+The least squares solution would suggest solving for \( R \) by minimizing:
 \[
-J_1(f) = f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)
+\| P_1 - R P_2 \|_F^2,
 \]
-where:
-- $C$ is a symmetric matrix,
-- $f$ is the vector we are optimizing,
-- $\lambda_1$ and $\lambda_2$ are Lagrange multipliers,
-- The constraints are $f^T f = 1$ (normalization) and $f^T e = 0$ (orthogonality).
+which leads to:
+\[
+R = P_1 P_2^T (P_2 P_2^T)^{-1}.
+\]
+However, this solution does not guarantee that \( R \) will be orthonormal (i.e., \( R^T R = I \)). Without this constraint, \( R \) may not preserve lengths and angles, which is essential in many applications. Therefore, we need to modify our approach to ensure that \( R \) is orthonormal.
 
-\subsubsection*{Taking the derivative w.r.t. $f$}
 
-To find the critical points, we take the derivative of $J_1(f)$ with respect to $f$:
-\[
-\frac{\partial}{\partial f} (f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)) = 2 C f - 2 \lambda_1 f - \lambda_2 e 
-\]
-Setting the total derivative to zero:
-\[
-2 C f - 2 \lambda_1 f - \lambda_2 e = 0
-\]
-which simplifies to:
-\[
-C f = \lambda_1 f + \frac{\lambda_2}{2} e
-\]
+\subsection*{Part b - Setting Up the Cost Function and Justifying Steps}
 
-\subsubsection*{Dot product with $e$}
+The objective function we aim to minimize is:
+\[
+E(R) = \| P_1 - R P_2 \|_F^2,
+\]
+where \( R \) is an orthonormal matrix, meaning \( R^T R = I \).
 
-Next, we take the dot product of both sides with $e$:
+The Frobenius norm of a matrix \( A \) is defined as:
 \[
-e^T C f = \lambda_1 e^T f + \frac{\lambda_2}{2} e^T e
+\| A \|_F^2 = \text{trace}(A^T A).
 \]
-Since $f^T e = 0$ (from the orthogonality constraint), this simplifies to:
+Therefore, we can rewrite \( E(R) \) as:
 \[
-e^T C f = \frac{\lambda_2}{2} e^T e
-\]
-Solving for $\lambda_2$:
-\[
-\lambda_2 = \frac{2 e^T C f}{e^T e}
-\]
-However, from the assumption that $f$ is orthogonal to $e$, we have $e^T C f = 0$, which implies:
-\[
-\lambda_2 = 0
+E(R) = \text{trace}((P_1 - R P_2)^T (P_1 - R P_2)).
 \]
 
-\subsubsection*{Conclusion for $f$}
-
-With $\lambda_2 = 0$, the equation simplifies to:
+Expanding the term \((P_1 - R P_2)^T (P_1 - R P_2)\), we get:
 \[
-C f = \lambda_1 f
-\]
-Thus, $f$ is an eigenvector of $C$ with eigenvalue $\lambda_1$. Since we assumed distinct eigenvalues, this eigenvalue corresponds to the second-largest eigenvalue.
-
-\subsection*{Part 2: Maximizing $J_2(g)$}
-Next, we maximize:
-\[
-J_2(g) = g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)
-\]
-where the constraints are $g^T g = 1$ (normalization), $f^T g = 0$ (orthogonality to $f$), and $e^T g = 0$ (orthogonality to $e$).
-
-\subsubsection*{Taking the derivative w.r.t. $g$}
-
-Taking the derivative of $J_2(g)$ with respect to $g$:
-
-\[
-\frac{\partial}{\partial f} (g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)) = 2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e 
+E(R) = \text{trace}(P_1^T P_1 - P_1^T R P_2 - P_2^T R^T P_1 + P_2^T R^T R P_2).
 \]
 
-Setting the total derivative to zero:
+Since \( R \) is an orthonormal matrix, we know \( R^T R = I \). Thus, the term \( P_2^T R^T R P_2 \) simplifies to \( P_2^T P_2 \). Applying this condition, we obtain:
 \[
-2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e = 0
-\]
-which simplifies to:
-\[
-C g = {\lambda_1} g + \frac{\lambda_2}{2} f + \frac{\lambda_3}{2} e
+E(R) = \text{trace}(P_1^T P_1 + P_2^T P_2 - P_1^T R P_2 - P_2^T R^T P_1).
 \]
 
-\subsubsection*{Dot product with $e$}
-
-Taking the dot product with $e$:
+We know that \( \text{trace}(A) = \text{trace}(A^T) \) for any square matrix \( A \). This allows us to combine the last two terms as follows:
 \[
-e^T C g = {\lambda_1} e^T g + \frac{\lambda_2}{2} e^T f + \frac{\lambda_3}{2} e^T e
+E(R) = \text{trace}(P_1^T P_1 + P_2^T P_2) - \text{trace}(P_1^T R P_2 + P_2^T R^T P_1).
 \]
-Using the constraints $e^T g = 0$ and $e^T f = 0$, this simplifies to:
+Since \( \text{trace}(P_1^T R P_2) = \text{trace}(P_2^T R^T P_1) \), we can rewrite this as:
 \[
-e^T C g = \frac{\lambda_3}{2} e^T e
-\]
-Solving for $\lambda_3$:
-\[
-\lambda_3 = \frac{2 e^T C g}{e^T e}
-\]
-Since $e^T C g = 0$, we conclude:
-\[
-\lambda_3 = 0
+E(R) = \text{trace}(P_1^T P_1 + P_2^T P_2) - 2 \, \text{trace}(P_1^T R P_2).
 \]
 
-\subsubsection*{Dot product with $f$}
 
-Now, taking the dot product with $f$:
-\[
-f^T C g = {\lambda_1} f^T g + \frac{\lambda_2}{2} f^T f + \frac{\lambda_3}{2} f^T e
-\]
-Using the constraints $f^T g = 0$ and $f^T e = 0$, this simplifies to:
-\[
-f^T C g = \frac{\lambda_2}{2} f^T f = \frac{\lambda_2}{2}
-\]
-Thus, $\lambda_2 = 0$.
+\subsection*{Part c - Min \(E(R)\) equivalent to  Max \(trace(P_1^TRP_2)\)}
 
-\subsubsection*{Conclusion for $g$}
-
-With $\lambda_2 = 0$ and $\lambda_3 = 0$, the equation simplifies to:
+The expression we derived,
 \[
-C g = {\lambda_1} g
+E(R) = \text{trace}(P_1^T P_1 + P_2^T P_2) - 2 \, \text{trace}(P_1^T R P_2),
 \]
-Thus, $g$ is an eigenvector of $C$, corresponding to the third-largest eigenvalue.
+has two parts:
+\begin{itemize}
+    \item The term \( \text{trace}(P_1^T P_1 + P_2^T P_2) \) is independent of \( R \). It represents a constant based on the fixed matrices \( P_1 \) and \( P_2 \).
+    \item The term \( -2 \, \text{trace}(P_1^T R P_2) \) depends on \( R \). Minimizing \( E(R) \) is therefore equivalent to maximizing \( \text{trace}(P_1^T R P_2) \) with respect to \( R \).
+\end{itemize}
+
+Thus, minimizing the objective function \( E(R) \) is equivalent to solving the following problem:
+\[
+\text{maximize } \text{trace}(P_1^T R P_2) \quad \text{subject to } R^T R = I.
+\]
+
+\subsection*{Part d - Detailed Solution with Justification for Each Step}
+
+\( \text{trace}(P_1^T R P_2) = \text{trace}(R P_2 P_1^T) \), this equality holds due to the cyclic property of trace. For any matrices \( A \), \( B \), and \( C \) of compatible dimensions, the trace of a product is invariant under cyclic permutations:
+\[
+\text{trace}(ABC) = \text{trace}(BCA) = \text{trace}(CAB)
+\]
+Applying this property, we have:
+\[
+\text{trace}(P_1^T R P_2) = \text{trace}(R P_2 P_1^T)
+\]
+This cyclic shift allows us to rewrite the expression in terms of \( R P_2 P_1^T \), which becomes useful in subsequent steps when we apply the SVD.
+
+We proceed by performing the SVD on the matrix \( P_2 P_1^T \), which gives us:
+\[
+P_2 P_1^T = U' S' V'^T
+\]
+where \( U' \) and \( V' \) are orthogonal matrices, and \( S' \) is a diagonal matrix with non-negative real entries (the singular values of \( P_2 P_1^T \)).
+
+Now, substituting this into our trace expression, we get:
+\[
+\text{trace}(R P_2 P_1^T) = \text{trace}(R U' S' V'^T)
+\]
+This substitution is valid since we are replacing \( P_2 P_1^T \) with its decomposition, allowing us to simplify the trace further.
+
+Using the cyclic property of trace again, we can rearrange terms inside the trace without changing the value:
+\[
+\text{trace}(R U' S' V'^T) = \text{trace}(S' V'^T R U')
+\]
+Defining \( X = V'^T R U' \), we get:
+\[
+\text{trace}(S' V'^T R U') = \text{trace}(S' X)
+\]
+This expression isolates \( S' \), the singular values, which are instrumental in maximizing the trace expression in subsequent parts.
+
+
+\subsection*{Part e - Finding the Matrix \( X \) that Maximizes \( \text{trace}(S' X) \)}
+
+We aim to maximize the expression \( \text{trace}(S' X) \) with respect to matrix \( X \), given that \( S' \) is a diagonal matrix with non-negative singular values. Here is how we approach this maximization problem:
+
+
+Since \( X = V'^T R U' \), and \( R \) is an orthonormal matrix, \( X \) inherits the constraints imposed by \( R \). For the trace to be maximized, we must choose \( R \) (and hence \( X \)) in a way that aligns the entries of \( X \) with the entries of \( S' \).
+
+
+The trace \( \text{trace}(S' X) \) is maximized when \( X \) matches the identity matrix in terms of the alignment of singular values. Thus, to maximize \( \text{trace}(S' X) \), we need \( X \) to be a rotation matrix that aligns the directions of \( V' \) and \( U' \).
+
+
+The maximal alignment happens when \( X = I \), as this configuration fully aligns the singular values in \( S' \) with those in \( X \). Thus, the optimal choice for \( X \) is:
+\[
+X = I
+\]
+
+
+\subsection*{Part f - Determining \( R \) from the Optimal \( X \)}
+
+Since\( X = I \)  this leads to \( V'^T R U' = I \), or equivalently:
+   \[
+   R = V' U'^T
+   \]
+
+
+\subsection*{Part g - Additional Constraint if \( R \) is a Rotation Matrix}
+
+ A rotation matrix in 2D or 3D has a determinant of +1, as opposed to reflection matrices, which have a determinant of -1. Thus:
+
+\textbf{Enforcing \( R \) as a Rotation Matrix}:
+   To ensure \( R \) is a rotation matrix, we need to impose the constraint:
+   \[
+   \det(R) = +1
+   \]
+
+
+   After computing \( R = V' U'^T \), if we find that \( \det(R) = -1 \), we can adjust \( R \) to make it a rotation matrix by flipping the sign of one of the columns in \( U' \) or \( V' \). This ensures that the determinant becomes +1 while maintaining the orthonormality of \( R \).
 
 \end{document}
