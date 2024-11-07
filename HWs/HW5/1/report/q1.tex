@@ -51,7 +51,7 @@ The overall time complexity is thus \(\mathbf{O(N^2 \log N)}\).
 A pixel-wise approach would have a time complexity of \(O(N^2W^2)\) (\(W\) being the window size) with the worst case being \(O(N^4)\).
 This is significantly higher than the FFT-based approach.
 \pagebreak
-\subsection*{Part b: Rotation}
+\subsection*{Rotation}
 Let us again assume an initial image $f_1(x, y)$ of size $N \times N$. Then, by translating the image by $(x_0, y_0)$ and rotated by an angle $\theta_0$
 , we obtain a new image $ f_2(x, y) = f_1(x \cos \theta_0 + y \sin \theta_0 - x_0, -x \sin \theta_0 + y \cos \theta_0 - y_0)$. 
 
