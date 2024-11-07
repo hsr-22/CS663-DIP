@@ -19,122 +19,68 @@
 \flushleft
 \section*{Homework 5 - Question 2}
 
-The problem involves maximizing a quadratic form subject to constraints, using the method of Lagrange multipliers. The matrix $C$ is symmetric, and we aim to find the eigenvectors and eigenvalues of $C$. The solution proceeds in two parts: maximizing $J_1(f)$ and $J_2(g)$.
+Given the images \( g_1 \) and \( g_2 \) taken under different focus settings, we are expressing them mathematically as:
 
-\subsection*{Part 1: Maximizing $J_1(f)$}
-We aim to maximize:
-\[
-J_1(f) = f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)
-\]
-where:
-- $C$ is a symmetric matrix,
-- $f$ is the vector we are optimizing,
-- $\lambda_1$ and $\lambda_2$ are Lagrange multipliers,
-- The constraints are $f^T f = 1$ (normalization) and $f^T e = 0$ (orthogonality).
+\begin{itemize}
+    \item \( g_1 = f_1 + h_2 * f_2 \), where:
+        \begin{itemize}
+            \item \( f_1 \) is the scene outside (in focus for \( g_1 \)),
+            \item \( h_2 \) is the blur kernel applied to the reflection \( f_2 \),
+            % \item \( * \) denotes convolution.
+        \end{itemize}
+    \item \( g_2 = h_1 * f_1 + f_2 \), where:
+        \begin{itemize}
+            \item \( h_1 \) is the blur kernel applied to the outside scene \( f_1 \) when the reflection \( f_2 \) is in focus.
+        \end{itemize}
+\end{itemize}
 
-\subsubsection*{Taking the derivative w.r.t. $f$}
+\subsection*{Fourier Transform Approach}
 
-To find the critical points, we take the derivative of $J_1(f)$ with respect to $f$:
-\[
-\frac{\partial}{\partial f} (f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)) = 2 C f - 2 \lambda_1 f - \lambda_2 e 
-\]
-Setting the total derivative to zero:
-\[
-2 C f - 2 \lambda_1 f - \lambda_2 e = 0
-\]
-which simplifies to:
-\[
-C f = \lambda_1 f + \frac{\lambda_2}{2} e
-\]
-
-\subsubsection*{Dot product with $e$}
-
-Next, we take the dot product of both sides with $e$:
-\[
-e^T C f = \lambda_1 e^T f + \frac{\lambda_2}{2} e^T e
-\]
-Since $f^T e = 0$ (from the orthogonality constraint), this simplifies to:
-\[
-e^T C f = \frac{\lambda_2}{2} e^T e
-\]
-Solving for $\lambda_2$:
-\[
-\lambda_2 = \frac{2 e^T C f}{e^T e}
-\]
-However, from the assumption that $f$ is orthogonal to $e$, we have $e^T C f = 0$, which implies:
-\[
-\lambda_2 = 0
-\]
-
-\subsubsection*{Conclusion for $f$}
-
-With $\lambda_2 = 0$, the equation simplifies to:
-\[
-C f = \lambda_1 f
-\]
-Thus, $f$ is an eigenvector of $C$ with eigenvalue $\lambda_1$. Since we assumed distinct eigenvalues, this eigenvalue corresponds to the second-largest eigenvalue.
-
-\subsection*{Part 2: Maximizing $J_2(g)$}
-Next, we maximize:
-\[
-J_2(g) = g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)
-\]
-where the constraints are $g^T g = 1$ (normalization), $f^T g = 0$ (orthogonality to $f$), and $e^T g = 0$ (orthogonality to $e$).
-
-\subsubsection*{Taking the derivative w.r.t. $g$}
-
-Taking the derivative of $J_2(g)$ with respect to $g$:
+To solve for \( f_1 \) and \( f_2 \), let's take the Fourier Transform of both equations:
 
 \[
-\frac{\partial}{\partial f} (g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)) = 2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e 
+G_1(\mu) = F_1(\mu) + H_2(\mu) F_2(\mu)
+\]
+\[
+G_2(\mu) = H_1(\mu) F_1(\mu) + F_2(\mu)
 \]
 
-Setting the total derivative to zero:
+Now we can rearrange these equations to isolate \( F_1(\mu) \) and \( F_2(\mu) \):
+
+\begin{enumerate}
+    \item Solving for \( F_2(\mu) \):
+    \[
+    F_2(\mu) = \frac{G_2(\mu) - H_1(\mu) G_1(\mu)}{1 - H_1(\mu) H_2(\mu)}
+    \]
+    \item Solving for \( F_1(\mu) \):
+    \[
+    F_1(\mu) = \frac{G_1(\mu) - H_2(\mu) G_2(\mu)}{1 - H_1(\mu) H_2(\mu)}
+    \]
+\end{enumerate}
+
+\subsection*{Observations on the Formula}
+
+This solution is defined as long as \( 1 - H_1(\mu) H_2(\mu) \neq 0 \). However, due to the nature of \( h_1 \) and \( h_2 \) as low-pass blur kernels, each integrates to 1 over the entire domain (i.e., \( H_1(0) = H_2(0) = 1 \)). This implies that at the frequency \( \mu = 0 \), we encounter:
+
 \[
-2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e = 0
-\]
-which simplifies to:
-\[
-C g = {\lambda_1} g + \frac{\lambda_2}{2} f + \frac{\lambda_3}{2} e
+1 - H_1(0) H_2(0) = 0
 \]
 
-\subsubsection*{Dot product with $e$}
+As a result, the formula becomes undefined at low frequencies, particularly at the DC component (zero frequency). This introduces an issue where we can recover high-frequency details in the images, but we cannot reliably reconstruct low-frequency components.
 
-Taking the dot product with $e$:
+In practice, this lack of low-frequency information leads to an artificial-looking result because the image's lower frequencies, which contribute to smooth transitions and shading, are not accurately reconstructed. A common workaround is to add a small \( \epsilon \) to the denominator to stabilize the solution:
+
 \[
-e^T C g = {\lambda_1} e^T g + \frac{\lambda_2}{2} e^T f + \frac{\lambda_3}{2} e^T e
+F_2(\mu) = \frac{G_2(\mu) - H_1(\mu) G_1(\mu)}{1 - H_1(\mu) H_2(\mu) + \epsilon}
 \]
-Using the constraints $e^T g = 0$ and $e^T f = 0$, this simplifies to:
 \[
-e^T C g = \frac{\lambda_3}{2} e^T e
-\]
-Solving for $\lambda_3$:
-\[
-\lambda_3 = \frac{2 e^T C g}{e^T e}
-\]
-Since $e^T C g = 0$, we conclude:
-\[
-\lambda_3 = 0
+F_1(\mu) = \frac{G_1(\mu) - H_2(\mu) G_2(\mu)}{1 - H_1(\mu) H_2(\mu) + \epsilon}
 \]
 
-\subsubsection*{Dot product with $f$}
+\subsection*{Effect of Noise}
 
-Now, taking the dot product with $f$:
-\[
-f^T C g = {\lambda_1} f^T g + \frac{\lambda_2}{2} f^T f + \frac{\lambda_3}{2} f^T e
-\]
-Using the constraints $f^T g = 0$ and $f^T e = 0$, this simplifies to:
-\[
-f^T C g = \frac{\lambda_2}{2} f^T f = \frac{\lambda_2}{2}
-\]
-Thus, $\lambda_2 = 0$.
+If the images are noisy, with \( g_1 = f_1 + h_2 * f_2 + \eta_1 \) and \( g_2 = h_1 * f_1 + f_2 + \eta_2 \), where \( \eta_1 \) and \( \eta_2 \) are noise terms, this affects our results:
 
-\subsubsection*{Conclusion for $g$}
-
-With $\lambda_2 = 0$ and $\lambda_3 = 0$, the equation simplifies to:
-\[
-C g = {\lambda_1} g
-\]
-Thus, $g$ is an eigenvector of $C$, corresponding to the third-largest eigenvalue.
+For high frequencies, the denominator remains large (close to 1), so noise does not amplify significantly. However, for low frequencies, as \( H_1(\mu) H_2(\mu) \to 1 \), the denominator approaches zero, potentially amplifying noise. Since the signal strength in these frequencies is also high, the relative error won't become overwhelming, unlike with an inverse low-pass filter under noise.
 
 \end{document}
