@@ -68,7 +68,7 @@ This solution is defined as long as \( 1 - H_1(\mu) H_2(\mu) \neq 0 \). However,
 
 As a result, the formula becomes undefined at low frequencies, particularly at the DC component (zero frequency). This introduces an issue where we can recover high-frequency details in the images, but we cannot reliably reconstruct low-frequency components.
 
-In practice, this lack of low-frequency information leads to an artificial-looking result because the image's lower frequencies, which contribute to smooth transitions and shading, are not accurately reconstructed. A common workaround is to add a small \( \epsilon \) to the denominator to stabilize the solution:
+Hence, to correct this we can add a small \( \epsilon \) to the denominator to stabilize the solution:
 
 \[
 F_2(\mu) = \frac{G_2(\mu) - H_1(\mu) G_1(\mu)}{1 - H_1(\mu) H_2(\mu) + \epsilon}
@@ -76,11 +76,5 @@ F_2(\mu) = \frac{G_2(\mu) - H_1(\mu) G_1(\mu)}{1 - H_1(\mu) H_2(\mu) + \epsilon}
 \[
 F_1(\mu) = \frac{G_1(\mu) - H_2(\mu) G_2(\mu)}{1 - H_1(\mu) H_2(\mu) + \epsilon}
 \]
-
-\subsection*{Effect of Noise}
-
-If the images are noisy, with \( g_1 = f_1 + h_2 * f_2 + \eta_1 \) and \( g_2 = h_1 * f_1 + f_2 + \eta_2 \), where \( \eta_1 \) and \( \eta_2 \) are noise terms, this affects our results:
-
-For high frequencies, the denominator remains large (close to 1), so noise does not amplify significantly. However, for low frequencies, as \( H_1(\mu) H_2(\mu) \to 1 \), the denominator approaches zero, potentially amplifying noise. Since the signal strength in these frequencies is also high, the relative error won't become overwhelming, unlike with an inverse low-pass filter under noise.
 
 \end{document}
