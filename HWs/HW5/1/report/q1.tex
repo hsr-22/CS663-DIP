@@ -19,122 +19,69 @@
 \flushleft
 \section*{Homework 5 - Question 1}
 
-The problem involves maximizing a quadratic form subject to constraints, using the method of Lagrange multipliers. The matrix $C$ is symmetric, and we aim to find the eigenvectors and eigenvalues of $C$. The solution proceeds in two parts: maximizing $J_1(f)$ and $J_2(g)$.
+% The problem involves maximizing a quadratic form subject to constraints, using the method of Lagrange multipliers. The matrix $C$ is symmetric, and we aim to find the eigenvectors and eigenvalues of $C$. The solution proceeds in two parts: maximizing $J_1(f)$ and $J_2(g)$.
 
-\subsection*{Part 1: Maximizing $J_1(f)$}
-We aim to maximize:
-\[
-J_1(f) = f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)
-\]
-where:
-- $C$ is a symmetric matrix,
-- $f$ is the vector we are optimizing,
-- $\lambda_1$ and $\lambda_2$ are Lagrange multipliers,
-- The constraints are $f^T f = 1$ (normalization) and $f^T e = 0$ (orthogonality).
+\subsection*{Translation}
+Let us assume an initial image $f_1(x, y)$ of size $N \times N$. Then, by translating the image by $(x_0, y_0)$, we obtain a new image $f_2(x, y) = f_1(x - x_0, y - y_0)$. 
 
-\subsubsection*{Taking the derivative w.r.t. $f$}
-
-To find the critical points, we take the derivative of $J_1(f)$ with respect to $f$:
+The Fourier transforms of these images would then be related as
 \[
-\frac{\partial}{\partial f} (f^T C f - \lambda_1 (f^T f - 1) - \lambda_2 (f^T e)) = 2 C f - 2 \lambda_1 f - \lambda_2 e 
+    F_2(\mu, \nu) = e^{-j 2 \pi (\mu x_0 + \nu y_0)} \times F_1(\mu, \nu)
 \]
-Setting the total derivative to zero:
+The cross-power spectrum $C(\mu, \nu)$ of both images is then given by:
 \[
-2 C f - 2 \lambda_1 f - \lambda_2 e = 0
+    C(\mu, \nu) = \frac{F_2^*(\mu, \nu) F_1(\mu, \nu)}{|F_2(\mu, \nu)||F_1(\mu, \nu)|} = e^{j 2 \pi (\mu x_0 + \nu y_0)}
 \]
-which simplifies to:
+Taking the inverse Fourier transform of $C(\mu, \nu)$, we obtain a delta function that is centered at $(-x_0, -y_0)$:
 \[
-C f = \lambda_1 f + \frac{\lambda_2}{2} e
+    F^{-1} \left( e^{j 2 \pi (\mu x_0 + \nu y_0)} \right) = \delta(x + x_0, y + y_0)
 \]
 
-\subsubsection*{Dot product with $e$}
+Through this, we are able to obtain the shift between the two images (\underbar{i.e.} $(x_0, y_0)$).
 
-Next, we take the dot product of both sides with $e$:
-\[
-e^T C f = \lambda_1 e^T f + \frac{\lambda_2}{2} e^T e
-\]
-Since $f^T e = 0$ (from the orthogonality constraint), this simplifies to:
-\[
-e^T C f = \frac{\lambda_2}{2} e^T e
-\]
-Solving for $\lambda_2$:
-\[
-\lambda_2 = \frac{2 e^T C f}{e^T e}
-\]
-However, from the assumption that $f$ is orthogonal to $e$, we have $e^T C f = 0$, which implies:
-\[
-\lambda_2 = 0
-\]
+\subsubsection*{Time Compexity}
+The above method involves computing the Fourier transform of $N \times N$ images and the inverse Fourier transform of the cross-power spectrum,
+ which have time complexity of $O(N^2 \log N)$ via FFT.
+ The computation of the cross-power spectrum has a time complexity of $O(N^2)$.
+\newline
+\newline
+The overall time complexity is thus \(\mathbf{O(N^2 \log N)}\).
+\newline
+\newline
+A pixel-wise approach would have a time complexity of \(O(N^2W^2)\) (\(W\) being the window size) with the worst case being \(O(N^4)\).
+This is significantly higher than the FFT-based approach.
+\pagebreak
+\subsection*{Part b: Rotation}
+Let us again assume an initial image $f_1(x, y)$ of size $N \times N$. Then, by translating the image by $(x_0, y_0)$ and rotated by an angle $\theta_0$
+, we obtain a new image $ f_2(x, y) = f_1(x \cos \theta_0 + y \sin \theta_0 - x_0, -x \sin \theta_0 + y \cos \theta_0 - y_0)$. 
 
-\subsubsection*{Conclusion for $f$}
-
-With $\lambda_2 = 0$, the equation simplifies to:
+The Fourier transforms of these images would then be related as
 \[
-C f = \lambda_1 f
-\]
-Thus, $f$ is an eigenvector of $C$ with eigenvalue $\lambda_1$. Since we assumed distinct eigenvalues, this eigenvalue corresponds to the second-largest eigenvalue.
-
-\subsection*{Part 2: Maximizing $J_2(g)$}
-Next, we maximize:
-\[
-J_2(g) = g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)
-\]
-where the constraints are $g^T g = 1$ (normalization), $f^T g = 0$ (orthogonality to $f$), and $e^T g = 0$ (orthogonality to $e$).
-
-\subsubsection*{Taking the derivative w.r.t. $g$}
-
-Taking the derivative of $J_2(g)$ with respect to $g$:
-
-\[
-\frac{\partial}{\partial f} (g^T C g - {\lambda_1} (g^T g - 1) - \lambda_2 (f^T g) - \lambda_3 (e^T g)) = 2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e 
+    F_2(\mu, \nu) = e^{-j 2 \pi (\mu x_0 + \nu y_0)} \times F_1(\mu \cos \theta_0 + \nu \sin \theta_0, -\mu \sin \theta_0 + \nu \cos \theta_0)
 \]
 
-Setting the total derivative to zero:
+With the same logic as before, the cross-power spectrum $C(\mu, \nu)$ of both images can be used to find the shift $(x_0, y_0)$.
+\newline
+\newline
+To find the rotation angle $\theta_0$, we first take the magnitude of the Fourier transforms of both images, thereby obtaining:
 \[
-2 C g - 2 {\lambda_1} g - \lambda_2 f - \lambda_3 e = 0
-\]
-which simplifies to:
-\[
-C g = {\lambda_1} g + \frac{\lambda_2}{2} f + \frac{\lambda_3}{2} e
-\]
-
-\subsubsection*{Dot product with $e$}
-
-Taking the dot product with $e$:
-\[
-e^T C g = {\lambda_1} e^T g + \frac{\lambda_2}{2} e^T f + \frac{\lambda_3}{2} e^T e
-\]
-Using the constraints $e^T g = 0$ and $e^T f = 0$, this simplifies to:
-\[
-e^T C g = \frac{\lambda_3}{2} e^T e
-\]
-Solving for $\lambda_3$:
-\[
-\lambda_3 = \frac{2 e^T C g}{e^T e}
-\]
-Since $e^T C g = 0$, we conclude:
-\[
-\lambda_3 = 0
+    M_2(\mu, \nu) = M_1(\mu \cos \theta_0 + \nu \sin \theta_0, -\mu \sin \theta_0 + \nu \cos \theta_0)
 \]
 
-\subsubsection*{Dot product with $f$}
-
-Now, taking the dot product with $f$:
+A rotation in the rectangular coordinates corresponds to a transation in the polar coordinates. 
 \[
-f^T C g = {\lambda_1} f^T g + \frac{\lambda_2}{2} f^T f + \frac{\lambda_3}{2} f^T e
+\rho = \sqrt{\mu^2 + \nu^2}
 \]
-Using the constraints $f^T g = 0$ and $f^T e = 0$, this simplifies to:
 \[
-f^T C g = \frac{\lambda_2}{2} f^T f = \frac{\lambda_2}{2}
+\theta_1 = \arctan\left(\frac{\nu}{\mu}\right)
 \]
-Thus, $\lambda_2 = 0$.
-
-\subsubsection*{Conclusion for $g$}
-
-With $\lambda_2 = 0$ and $\lambda_3 = 0$, the equation simplifies to:
 \[
-C g = {\lambda_1} g
+\theta_2 = \arctan\left(\frac{\nu \cos \theta_0 - \mu \sin \theta_0}{\mu \cos \theta_0 + \nu \sin \theta_0}\right) 
+= \arctan\left(\frac{\nu}{\mu}\right) - \theta_0
 \]
-Thus, $g$ is an eigenvector of $C$, corresponding to the third-largest eigenvalue.
 
+Thus, the rotation angle can be found by finding the shift in the polar coordinates, in the same way as the translation.
+\[
+M_2(\rho, \theta) = M_1(\rho, \theta +  \theta_0)
+\]
 \end{document}
