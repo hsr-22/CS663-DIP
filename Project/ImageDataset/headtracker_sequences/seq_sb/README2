@@ -1,0 +1,8 @@
+This 500-image sequence spans about 50 seconds.  Thus the
+tracker ran at 10 Hz.
+
+The file 'ellipse_states.txt' contains the exact ellipse 
+positions and sizes that the algorithm computed at run time.
+The files 'loc_*.m' were computed off-line using one or 
+more of the modules.
+
