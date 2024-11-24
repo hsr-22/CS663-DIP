@@ -1,9 +1,11 @@
 % File: jpeg_compression_engine.m
 
-function jpeg_compression_engine(images_folder, quality_factors)
+function jpeg_compression_engine(images_folder, compressed_folder, recovered_folder, quality_factors)
     % Main driver function to process images and simulate JPEG-like compression.
     % Input: 
-    % images_folder - Folder containing grayscale BMP images
+    % images_folder - Folder containing BMP images
+    % compressed_folder - Folder to save compressed files
+    % recovered_folder - Folder to save recovered images
     % quality_factors - Array of quality factors for quantization
     
     % Get list of image files in the folder
@@ -12,17 +14,25 @@ function jpeg_compression_engine(images_folder, quality_factors)
         error('No BMP images found in the specified folder: %s', images_folder);
     end
     
-    RMSE = []; % Store RMSE for each image and quality factor
-    BPP = [];  % Store bits-per-pixel for each image and quality factor
-
     % Loop through each image
     for imgIdx = 1:length(image_files)
-        % Load the image as double for calculations
+        % Load the image
         image_path = fullfile(image_files(imgIdx).folder, image_files(imgIdx).name);
-        original_image = double(imread(image_path)); % Ensure image is read as double
+        original_image = imread(image_path);
+        
+        % Convert to grayscale if the image is RGB
+        if size(original_image, 3) == 3
+            original_image = rgb2gray(original_image);
+        end
+        
+        % Convert to double for calculations
+        original_image = double(original_image);
         [rows, cols] = size(original_image);
         
         fprintf('Processing image: %s\n', image_files(imgIdx).name);
+        
+        RMSE = []; % Store RMSE for each quality factor
+        BPP = [];  % Store bits-per-pixel for each quality factor
         
         % Loop through quality factors
         for q = quality_factors
@@ -42,7 +52,7 @@ function jpeg_compression_engine(images_folder, quality_factors)
             encoded_data = huffmanenco(rle_encoded, huffman_dict);
             
             % Step 5: Calculate compression size and bits per pixel
-            compressed_size_bits = length(encoded_data) * 8; % Convert to bits
+            compressed_size_bits = length(encoded_data); % Already in bits
             bits_per_pixel = compressed_size_bits / (rows * cols);
             BPP = [BPP; bits_per_pixel];
             
@@ -59,10 +69,10 @@ function jpeg_compression_engine(images_folder, quality_factors)
             
             % Save compressed data to a file with .compressed extension
             [~, name, ~] = fileparts(image_files(imgIdx).name); % Extract base filename
-            write_compressed_file(encoded_data, q, fullfile(images_folder, [name, '.compressed']));
+            write_compressed_file(encoded_data, q, fullfile(compressed_folder, [name, '.hps'])); % hps = harsh, pranav, swayam
             
             % Save the decoded image to BMP format
-            decoded_image_filename = fullfile(images_folder, [name, '_decoded.bmp']);
+            decoded_image_filename = fullfile(recovered_folder, [name, '_decoded.bmp']);
             imwrite(uint8(reconstructed_image), decoded_image_filename);
             
             % Display the reconstructed image
@@ -70,14 +80,19 @@ function jpeg_compression_engine(images_folder, quality_factors)
             imshow(uint8(reconstructed_image)); % Convert to uint8 for display
             title(sprintf('Reconstructed Image (Quality Factor: %d)', q));
         end
+        
+        % Plot RMSE vs. BPP
+        figure;
+        plot(BPP, RMSE, 'o-');
+        xlabel('Bits Per Pixel (BPP)');
+        ylabel('Root Mean Square Error (RMSE)');
+        title(sprintf('RMSE vs BPP for JPEG Compression - %s', image_files(imgIdx).name));
+        
+        % Save the plot
+        plot_filename = fullfile(images_folder, sprintf('%s_rmse_vs_bpp.png', name));
+        saveas(gcf, plot_filename);
+        close(gcf); % Clear the figure from MATLAB
     end
-    
-    % Plot RMSE vs. BPP
-    figure;
-    plot(BPP, RMSE, 'o-');
-    xlabel('Bits Per Pixel (BPP)');
-    ylabel('Root Mean Square Error (RMSE)');
-    title('RMSE vs BPP for JPEG Compression');
 end
 
 % Function to perform block-wise 2D DCT
@@ -144,21 +159,6 @@ function decoded = run_length_decode(data, original_size)
     decoded = reshape(decoded, original_size);
 end
 
-% % Huffman Encoding and Decoding
-% function encoded = huffman_encode(data)
-%     symbols = unique(data);
-%     probabilities = histc(data, symbols) / numel(data);
-%     huffman_dict = huffmandict(symbols, probabilities);
-%     encoded = huffmanenco(data, huffman_dict);
-% end
-
-% function decoded = huffman_decode(encoded_data, original_data)
-%     symbols = unique(original_data);
-%     probabilities = histc(original_data, symbols) / numel(original_data);
-%     huffman_dict = huffmandict(symbols, probabilities);
-%     decoded = huffmandeco(encoded_data, huffman_dict);
-% end
-
 % Function to perform inverse quantization and inverse DCT
 function reconstructed = inverse_quantize_dct(quantized, quality_factor, img_size)
     quant_table = [
@@ -190,8 +190,9 @@ function write_compressed_file(data, quality, filename)
     fclose(fileID);
 end
 
-
-images_folder = '../images'; % Path to the folder containing images
+images_folder = '../images/images'; % Path to the folder containing images
+compressed_folder = '../images/compressed'; % Path to the folder to save compressed files
+recovered_folder = '../images/recovered'; % Path to the folder to save recovered images
 quality_factors = [10, 20, 50, 75, 90]; % Example quality factors
 
-jpeg_compression_engine(images_folder, quality_factors);
+jpeg_compression_engine(images_folder, compressed_folder, recovered_folder, quality_factors);

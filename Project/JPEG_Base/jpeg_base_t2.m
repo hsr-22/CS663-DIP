@@ -217,8 +217,11 @@ function decoded = run_length_decode(data, original_size)
     decoded = reshape(decoded, original_size);
 end
 
-% Inverse quantization and DCT
 function reconstructed = inverse_quantize_dct(quantized, quality_factor, img_size)
+    % Perform inverse quantization and inverse DCT block-by-block.
+    % Handles edge cases for non-divisible image dimensions.
+    
+    % JPEG-like quantization table
     quant_table = [
         16 11 10 16 24 40 51 61;
         12 12 14 19 26 58 60 55;
@@ -229,15 +232,38 @@ function reconstructed = inverse_quantize_dct(quantized, quality_factor, img_siz
         49 64 78 87 103 121 120 101;
         72 92 95 98 112 100 103 99;
     ];
-    quant_table = quant_table * (100 / quality_factor);
-    [rows, cols] = deal(img_size(1), img_size(2));
+    quant_table = quant_table * (100 / quality_factor); % Scale by quality factor
+    
+    % Initialize reconstructed image
+    [rows, cols] = deal(img_size(1), img_size(2)); % Original image dimensions
     reconstructed = zeros(rows, cols);
-    for i = 1:8:rows
-        for j = 1:8:cols
-            block = quantized(i:i+7, j:j+7) .* quant_table;
-            reconstructed(i:i+7, j:j+7) = idct2(block);
+    block_size = 8; % DCT block size
+    
+    % Iterate through blocks
+    for i = 1:block_size:rows
+        for j = 1:block_size:cols
+            % Determine actual block dimensions (handle edges)
+            block_rows = i:min(i+block_size-1, rows);
+            block_cols = j:min(j+block_size-1, cols);
+            
+            % Debugging dimensions (optional)
+            fprintf('Processing block: Rows [%d:%d], Cols [%d:%d]\n', i, min(i+block_size-1, rows), j, min(j+block_size-1, cols));
+            
+            % Extract the quantized block
+            quantized_block = quantized(block_rows, block_cols);
+            
+            % Adjust quantization table for edge blocks
+            local_quant_table = quant_table(1:length(block_rows), 1:length(block_cols));
+            
+            % Apply inverse quantization
+            dequantized_block = quantized_block .* local_quant_table;
+            
+            % Perform inverse DCT on the dequantized block
+            reconstructed(block_rows, block_cols) = idct2(dequantized_block);
         end
     end
+    
+    % Convert to uint8 for valid image representation
     reconstructed = uint8(reconstructed);
 end
 

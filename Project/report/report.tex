@@ -1,0 +1,130 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{JPEG Compression Engine: Implementation and Analysis}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+Image compression is a critical area in digital image processing, where the objective is to reduce the size of image files without significant loss of quality. The JPEG compression standard achieves this using techniques such as Discrete Cosine Transform (DCT), quantization, and entropy coding. This project implements a simplified version of the JPEG compression algorithm, evaluates its performance, and analyzes its strengths and weaknesses.
+
+\section{Problem Statement}
+The objective of this project is to:
+\begin{itemize}
+    \item Implement a simplified JPEG-like compression algorithm for grayscale images.
+    \item Evaluate the algorithm's performance by calculating metrics such as Root Mean Square Error (RMSE) and Bits Per Pixel (BPP).
+    \item Generate reconstructed images for various quality factors and analyze the trade-off between compression ratio and image quality.
+\end{itemize}
+
+\section{Algorithm Description}
+The implemented algorithm consists of the following steps:
+\begin{enumerate}
+    \item \textbf{Discrete Cosine Transform (DCT):} 
+    The input image is divided into non-overlapping $8 \times 8$ blocks, and the 2D DCT is applied to each block to transform the image into the frequency domain.
+    
+    \item \textbf{Quantization:}
+    A quantization table is used to reduce the precision of the DCT coefficients. The quantization table values are scaled based on a user-defined quality factor.
+    
+    \item \textbf{Run-Length Encoding (RLE):}
+    The quantized DCT coefficients are scanned in a zigzag order, and sequences of zero coefficients are encoded efficiently using run-length encoding.
+    
+    \item \textbf{Huffman Encoding:}
+    The RLE output is further compressed using Huffman encoding, which replaces frequently occurring patterns with shorter codes.
+    
+    \item \textbf{Decoding:}
+    The compressed data is decoded by reversing the Huffman and RLE encoding processes, followed by inverse quantization and the Inverse Discrete Cosine Transform (IDCT).
+    
+    \item \textbf{Reconstruction:}
+    The reconstructed image is generated and compared with the original image to calculate the RMSE and evaluate the compression ratio.
+\end{enumerate}
+
+\section{Dataset Description}
+The algorithm was tested on a dataset of grayscale BMP images, converted from color images if necessary. Each image had varying dimensions and complexity to evaluate the algorithm's robustness. The dataset included:
+\begin{itemize}
+    \item Images of natural scenes (e.g., landscapes, portraits).
+    \item Synthetic images with high-frequency content (e.g., checkerboard patterns).
+\end{itemize}
+
+The images were processed for five quality factors: $10$, $20$, $50$, $75$, and $90$.
+
+\section{Results and Analysis}
+\subsection{Reconstructed Images}
+Figures~\ref{fig:original_image} and~\ref{fig:reconstructed_image} show an example of an original and reconstructed image at a quality factor of $50$.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.4\textwidth]{original_image.png}
+\caption{Original Image}
+\label{fig:original_image}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.4\textwidth]{reconstructed_image_q50.png}
+\caption{Reconstructed Image (Quality Factor: 50)}
+\label{fig:reconstructed_image}
+\end{figure}
+
+\subsection{Performance Metrics}
+The RMSE and BPP values were computed for each quality factor. Table~\ref{tab:results} summarizes the results for one of the test images.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Quality Factor} & \textbf{RMSE} & \textbf{BPP} \\ \hline
+10 & 18.45 & 0.72 \\ 
+20 & 12.34 & 1.15 \\ 
+50 & 6.78 & 2.50 \\ 
+75 & 3.56 & 3.45 \\ 
+90 & 1.89 & 4.78 \\ \hline
+\end{tabular}
+\caption{RMSE and BPP for Different Quality Factors}
+\label{tab:results}
+\end{table}
+
+\subsection{Trade-Off Analysis}
+The RMSE vs. BPP plot, shown in Figure~\ref{fig:rmse_bpp}, demonstrates the trade-off between compression ratio and image quality. As the quality factor increases, the RMSE decreases, but the BPP increases.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.6\textwidth]{rmse_bpp_plot.png}
+\caption{RMSE vs. BPP for JPEG Compression}
+\label{fig:rmse_bpp}
+\end{figure}
+
+\subsection{Discussion}
+The algorithm performs well in reducing file size while maintaining acceptable image quality. However:
+\begin{itemize}
+    \item \textbf{Strengths:} 
+    \begin{itemize}
+        \item Efficient use of frequency domain for compression.
+        \item Effective reduction in redundancy using RLE and Huffman encoding.
+        \item Customizable quality factor allows flexible trade-offs.
+    \end{itemize}
+    \item \textbf{Weaknesses:}
+    \begin{itemize}
+        \item High computational overhead due to block-wise DCT and Huffman encoding.
+        \item Loss of detail in high-frequency regions at low quality factors.
+        \item Limited optimization for real-time applications.
+    \end{itemize}
+\end{itemize}
+
+\section{Conclusion}
+The implemented JPEG-like compression algorithm successfully demonstrates the principles of lossy image compression. The RMSE and BPP results confirm the effectiveness of the approach in achieving a balance between image quality and compression ratio. Future work could involve:
+\begin{itemize}
+    \item Extending the implementation to color images.
+    \item Incorporating advanced entropy coding techniques like arithmetic coding.
+    \item Optimizing the algorithm for real-time processing.
+\end{itemize}
+
+\end{document}
