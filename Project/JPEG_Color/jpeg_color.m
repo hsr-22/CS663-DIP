@@ -7,7 +7,7 @@ function jpeg_compression_engine_color(images_folder, compressed_folder, recover
 % quality_factors - Array of quality factors for quantization
 
 % Get list of image files in the folder
-image_files = dir(fullfile(images_folder, '*.bmp')); % Update for BMP images
+image_files = dir(fullfile(images_folder, '*.tif')); % Update for BMP images
 if isempty(image_files)
     error('No BMP images found in the specified folder: %s', images_folder);
 end
@@ -99,7 +99,7 @@ for imgIdx = 1:length(image_files)
         write_compressed_file([encoded_data_Y(:); encoded_data_Cb(:); encoded_data_Cr(:)], q, fullfile(compressed_folder, [name, '.hps'])); % hps = harsh, pranav, swayam
 
         % Save the decoded image to BMP format
-        decoded_image_filename = fullfile(recovered_folder, [name, '_decoded.bmp']);
+        decoded_image_filename = fullfile(recovered_folder, sprintf('%s_color_decoded_q%d.bmp', name, q));
         imwrite(reconstructed_image, decoded_image_filename);
 
         % Display the reconstructed image

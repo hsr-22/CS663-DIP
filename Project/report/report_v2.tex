@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage[a4paper, left = 35mm, right = 35mm, bottom = 50mm]{geometry}
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{float}
@@ -12,6 +13,23 @@
 \usepackage{booktabs}
 \setlength{\parindent}{0pt}
 \graphicspath{{../images/}}
+
+% \usepackage{libertine}
+% \usepackage{charter}
+% \usepackage{sourcesanspro}
+
+% \usepackage{mathpazo} % Serif for main text
+\usepackage{inconsolata} % Monospaced font for code
+\usepackage{helvet} % Optional sans-serif font for headings
+
+\hypersetup{
+    colorlinks=true,        % Enables colored hyperlinks
+    % linktocpage=true,       % Links the page numbers in the TOC
+    linkcolor=black,         % Color of internal links (sections, TOC)
+    citecolor=red,          % Color of citation links
+    urlcolor=teal,          % Color of external hyperlinks
+    filecolor=magenta       % Color of file links
+}
 
 % Code style
 \lstset{
@@ -28,9 +46,9 @@
     showstringspaces=false,
 }
 
-\title{Image Compression Engine: Implementation and Analysis\\ \large{\textit{Course Project Report - CS663}}}
-\author{Harsh $\vert$ Pranav $\vert$ Swayam}
-\date{November 24, 2024} 
+\title{\centering Image Compression: Implementation \& Analysis\\ \large{\textit{Course Project Report - CS663}}}
+\author{\centering Harsh $\vert$ Pranav $\vert$ Swayam}
+\date{November 24, 2024}
 
 \begin{document}
 
@@ -239,14 +257,18 @@ The images were processed for five quality factors: $10$, $20$, $50$, $75$, and 
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=0.7\textwidth]{images/106_rmse_vs_bpp.png}
-    \caption{One instance of RMSE vs. Bits Per Pixel (BPP) for different quality factors.}
+    \caption{Instance of RMSE vs. Bits Per Pixel (BPP) for different quality factors.}
     \label{fig:rmse_bpp_plot}
 \end{figure}
 
 This document contains a reference to the images used in this analysis. You can access the photos at the following link:  
-\href{https://drive.google.com/drive/folders/1rpRNlFg8iFSTTgFFgbw2oKc3_D-u5A7l?usp=drive_link}{\textbf{Photos on Google Drive}}.
-\begin{table}
+\href{https://drive.google.com/drive/folders/1LGpUmurv2-XydOflUQNKCwBrPhe4YOIw?usp=sharing}{\textbf{Base Image Compression - Google Drive}}.
+
+A comparison table of image sizes is provided in Table \ref{tab:image_sizes}.
+
+\begin{table}[!htb]
 \centering
+
 \caption{Comparison of Image Sizes}
 \label{tab:image_sizes}
 \begin{tabular}{llll}
@@ -298,12 +320,39 @@ The algorithm performs well in reducing file size while maintaining acceptable i
     \end{itemize}
 \end{itemize}
 
+% \clearpage
+\newpage
+\section{Introducing Color Images}
+
+\subsection{Algorithm Extension}
+To extend the algorithm to color images, we can use the YCbCr color space. The Y channel contains the luminance information, while the Cb and Cr channels contain the chrominance information. The DCT is applied to each channel separately, and the quantization and encoding steps are performed independently.
+
+\begin{lstlisting}
+% Convert the image to YCrCb color space
+ycbcr_image = rgb2ycbcr(original_image);
+Y_channel = double(ycbcr_image(:,:,1));
+Cb_channel = double(ycbcr_image(:,:,2));
+Cr_channel = double(ycbcr_image(:,:,3));
+\end{lstlisting}
+
+\subsection{Results and Analysis}
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/106_color_rmse_vs_bpp.png}
+    \caption{Instance of RMSE vs. Bits Per Pixel (BPP) for different quality factors.}
+    \label{fig:color_rmse_bpp_plot}
+\end{figure}
+
+This document contains a reference to the images used in this analysis. You can access the photos at the following link:  
+\href{https://drive.google.com/drive/folders/1qtCNxamLRdX4h_0CIhrqge2lhjIW8rnh?usp=sharing}{\textbf{Color Image Compression - Google Drive}}.
+
+
 \section{Conclusion}
-The implemented JPEG-like compression algorithm successfully demonstrates the principles of lossy image compression. The RMSE and BPP results confirm the effectiveness of the approach in achieving a balance between image quality and compression ratio. Future work could involve:
+The implemented JPEG-like compression algorithm successfully demonstrates the principles of lossy image compression. The RMSE and BPP results confirm the effectiveness of the approach in achieving a balance between image quality and compression ratio. The extension of the JPEG-like compression algorithm to color images demonstrates its versatility. Using the YCbCr color space enables efficient compression with minimal perceptual loss. However, the computational cost and susceptibility to artifacts in chrominance channels require further optimization. Future work could involve:
 \begin{itemize}
-    \item Extending the implementation to color images.
-    \item Incorporating advanced entropy coding techniques like arithmetic coding.
-    \item Optimizing the algorithm for real-time processing.
+    \item Optimizing color space conversions for real-time applications.
+    \item Using adaptive quantization for better quality preservation.
+    \item Exploring more advanced entropy coding techniques like arithmetic coding.
 \end{itemize}
 
 \end{document}
