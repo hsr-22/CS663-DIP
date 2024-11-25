@@ -72,7 +72,7 @@ function jpeg_compression_engine(images_folder, compressed_folder, recovered_fol
             write_compressed_file(encoded_data, q, fullfile(compressed_folder, [name, '.hps'])); % hps = harsh, pranav, swayam
             
             % Save the decoded image to BMP format
-            decoded_image_filename = fullfile(recovered_folder, [name, '_decoded.bmp']);
+            decoded_image_filename = fullfile(recovered_folder, sprintf('%s_decoded_q%d.bmp', name, q));
             imwrite(uint8(reconstructed_image), decoded_image_filename);
             
             % Display the reconstructed image
