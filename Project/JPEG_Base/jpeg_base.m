@@ -42,23 +42,23 @@ function jpeg_compression_engine(images_folder, compressed_folder, recovered_fol
             % Step 2: Quantize the DCT coefficients
             quantized = quantize_dct(dct_coeffs, q);
             
-            % Step 3: Apply Run-Length Encoding (RLE)
-            rle_encoded = run_length_encode(quantized(:));
-            
-            % Step 4: Compute Huffman Encoding
-            symbols = unique(rle_encoded);
-            probabilities = histc(rle_encoded, symbols) / numel(rle_encoded);
+            % Step 3: Compute Huffman Encoding
+            symbols = unique(quantized(:)); % Unique symbols in the quantized data
+            probabilities = histc(quantized(:), symbols) / numel(quantized);
             huffman_dict = huffmandict(symbols, probabilities);
-            encoded_data = huffmanenco(rle_encoded, huffman_dict);
+            encoded_data = huffmanenco(quantized, huffman_dict);
+
+            % Step 4: Apply Run-Length Encoding (RLE)
+            rle_encoded = run_length_encode(encoded_data(:));
             
             % Step 5: Calculate compression size and bits per pixel
-            compressed_size_bits = length(encoded_data); % Already in bits
+            compressed_size_bits = length(rle_encoded); % Already in bits
             bits_per_pixel = compressed_size_bits / (rows * cols);
             BPP = [BPP; bits_per_pixel];
             
             % Step 6: Decode Huffman and Run-Length
-            decoded_data = huffmandeco(encoded_data, huffman_dict); % Ensure `encoded_data` is a vector
-            quantized_reconstructed = run_length_decode(decoded_data, size(quantized));
+            decoded_data = run_length_decode(rle_encoded, size(rle_encoded));
+            quantized_reconstructed = huffmandeco(decoded_data, huffman_dict); % Ensure `encoded_data` is a vector
             
             % Step 7: Dequantize and apply inverse DCT block-by-block
             reconstructed_image = inverse_quantize_dct(quantized_reconstructed, q, [rows, cols]);
